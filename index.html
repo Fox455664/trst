@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نظام السلامة الميداني - 2025</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <style>
+        :root { --primary: #0a2e38; --gold: #c19a6b; --bg: #f8fafc; }
+        * { box-sizing: border-box; font-family: 'Cairo', sans-serif; }
+        body { background: var(--bg); margin: 0; padding-bottom: 80px; }
+        #loginOverlay { position: fixed; inset: 0; background: var(--primary); z-index: 10000; display: flex; align-items: center; justify-content: center; }
+        .login-card { background: white; padding: 40px; border-radius: 20px; width: 90%; max-width: 400px; text-align: center; border-top: 8px solid var(--gold); }
+        input, textarea { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 10px; font-size: 16px; }
+        .header { background: var(--primary); color: white; padding: 20px; text-align: center; border-bottom: 5px solid var(--gold); position: sticky; top: 0; z-index: 1000; }
+        .nav-tools { display: flex; justify-content: center; gap: 10px; margin-top: 10px; }
+        .btn-tool { background: rgba(255,255,255,0.2); color: white; border: 1px solid white; padding: 5px 12px; border-radius: 20px; cursor: pointer; font-size: 12px; }
+        .container { max-width: 700px; margin: 20px auto; padding: 0 15px; display: none; }
+        .card { background: white; border-radius: 15px; padding: 20px; margin-bottom: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+        .opt-btn { background: #f1f5f9; padding: 10px; text-align: center; border-radius: 8px; cursor: pointer; border: 2px solid transparent; font-size: 14px; transition: 0.3s; }
+        input[type="radio"] { display: none; }
+        input:checked + .opt-btn.ok { background: #dcfce7; color: #166534; border-color: #22c55e; }
+        input:checked + .opt-btn.no { background: #fee2e2; color: #991b1b; border-color: #ef4444; }
+        .violation-box { display: none; background: #fff5f5; padding: 15px; border-radius: 10px; margin-top: 10px; border: 1px dashed #ef4444; }
+        .footer { position: fixed; bottom: 0; width: 100%; background: white; padding: 15px; text-align: center; box-shadow: 0 -5px 15px rgba(0,0,0,0.1); z-index: 999; }
+        .submit-btn { background: var(--gold); color: white; border: none; padding: 15px 50px; border-radius: 12px; font-weight: bold; cursor: pointer; width: 90%; font-size: 18px; }
+    </style>
+</head>
+<body>
+
+<div id="loginOverlay">
+    <div class="login-card">
+        <h2>🛡️ نظام تفتيش السلامة</h2>
+        <input type="text" id="uid" placeholder="اسم المستخدم">
+        <input type="password" id="ups" placeholder="كلمة السر">
+        <button onclick="doLogin()" style="width:100%; padding:15px; background:var(--primary); color:white; border-radius:10px; border:none; cursor:pointer; font-weight:bold;">دخول 🚀</button>
+        <p id="lErr" style="color:red; display:none; margin-top:10px;">❌ بيانات دخول خاطئة</p>
+    </div>
+</div>
+
+<div id="mainApp" class="container">
+    <div class="header" style="border-radius:0 0 20px 20px;">
+        <h2 id="inspectorLabel" style="margin:0"></h2>
+        <div class="nav-tools">
+            <button class="btn-tool" onclick="changeMyPass()">🔑 تغيير السر</button>
+            <button class="btn-tool" style="background:#ef4444" onclick="logout()">🚪 خروج</button>
+        </div>
+    </div>
+
+    <form id="safetyForm" style="margin-top:20px">
+        <div class="card">
+            <h3 style="margin-top:0">📍 بيانات الموقع</h3>
+            <input type="date" id="rDate" name="report_date" required>
+            <input type="text" name="location" placeholder="الموقع / المحطة" required>
+            <input type="text" name="job_order" placeholder="رقم المقايسة / المهمة" required>
+        </div>
+
+        <div id="questionsContainer"></div>
+
+        <div class="footer">
+            <button type="submit" class="submit-btn" id="sBtn">إرسال التقرير النهائي 🚀</button>
+        </div>
+    </form>
+</div>
+
+<script>
+    const REDIS_URL = "https://exact-parakeet-58043.upstash.io";
+    const REDIS_TOKEN = "AeK7AAIncDFmOTAzMGJlOTM5Y2I0ZTFjYTg4ODRhOWIyNjJmZWMwY3AxNTgwNDM";
+
+    // تفعيل EmailJS
+    emailjs.init("Yv-DxRXZ5X9ZmSg3K");
+
+    const qList = [
+        "تصريح العمل الأساسي والثانوي متواجد", "اجتماع ما قبل البدء بالموقع (TBT)", "نموذج فريق العمل متواجد وموقع",
+        "إجراءات العمل الآمن JSA متوفرة", "إلمام الفريق بالمخاطر المذكورة", "بطاقة تعميد المصدر والمستلم",
+        "تأهيل سائق المعدات ساري", "المستلم متواجد بموقع العمل", "وضع أقفال السلامة (LOTO)",
+        "تركيب الأرضي المتنقل من الجهتين", "فعالية جهاز التستر", "فحص المركبة والعدد",
+        "شهادة المسعف ومكافح الحريق", "شهادة TUV للمعدات والرفع", "طفاية حريق سليمة ومفحوصة",
+        "شنطة إسعافات أولية مكتملة", "خوذة - ملابس - حذاء السلامة سليم"
+        // سيتم توليد الباقي تلقائياً حتى 113 بند
+    ];
+
+    async function doLogin() {
+        const u = document.getElementById('uid').value;
+        const p = document.getElementById('ups').value;
+        if(u==='admin' && p==='admin2025') {
+            sessionStorage.setItem('isAdmin','true');
+            window.location.href='admin.html';
+            return;
+        }
+        const res = await fetch(`${REDIS_URL}/get/user:${u}`, { headers: { Authorization: `Bearer ${REDIS_TOKEN}` } });
+        const data = await res.json();
+        if(data.result === p) {
+            sessionStorage.setItem('inspector', u);
+            startApp(u);
+        } else { document.getElementById('lErr').style.display='block'; }
+    }
+
+    function startApp(user) {
+        document.getElementById('loginOverlay').style.display='none';
+        document.getElementById('mainApp').style.display='block';
+        document.getElementById('inspectorLabel').innerText = "المفتش: " + user;
+        document.getElementById('rDate').valueAsDate = new Date();
+        loadQuestions();
+    }
+
+    function loadQuestions() {
+        const container = document.getElementById('questionsContainer');
+        for(let i=1; i<=113; i++) {
+            const qText = qList[i-1] || `بند فحص السلامة رقم ${i}`;
+            const div = document.createElement('div');
+            div.className = 'card';
+            div.innerHTML = `
+                <p><b>${i}. ${qText}</b></p>
+                <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px;">
+                    <label><input type="radio" name="q${i}" value="سليم" onclick="showV(${i},false)" required><div class="opt-btn ok">سليم</div></label>
+                    <label><input type="radio" name="q${i}" value="مخالف" onclick="showV(${i},true)"><div class="opt-btn no">مخالف</div></label>
+                    <label><input type="radio" name="q${i}" value="N/A" onclick="showV(${i},false)"><div class="opt-btn">N/A</div></label>
+                </div>
+                <div id="vbox${i}" class="violation-box">
+                    <input type="file" id="img${i}" accept="image/*" capture="environment">
+                    <textarea id="note${i}" placeholder="تفاصيل المخالفة..."></textarea>
+                </div>
+            `;
+            container.appendChild(div);
+        }
+    }
+
+    function showV(id, show) { document.getElementById(`vbox${id}`).style.display = show ? 'block' : 'none'; }
+
+    async function changeMyPass() {
+        const u = sessionStorage.getItem('inspector');
+        const np = prompt("أدخل كلمة السر الجديدة:");
+        if(np && np.length >= 4) {
+            await fetch(`${REDIS_URL}/set/user:${u}`, { method:'POST', headers:{Authorization:`Bearer ${REDIS_TOKEN}`}, body:np });
+            alert("✅ تم التغيير، سجل دخولك مجدداً");
+            logout();
+        }
+    }
+
+    function logout() { sessionStorage.clear(); location.reload(); }
+
+    const toBase64 = file => new Promise((res, rej) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => res(reader.result);
+        reader.onerror = e => rej(e);
+    });
+
+    document.getElementById('safetyForm').onsubmit = async (e) => {
+        e.preventDefault();
+        const btn = document.getElementById('sBtn');
+        btn.disabled = true; btn.innerText = "جاري الحفظ وإرسال التنبيه...";
+
+        try {
+            const reportId = Date.now();
+            const formData = new FormData(e.target);
+            const report = {
+                serial: reportId,
+                inspector: sessionStorage.getItem('inspector'),
+                timestamp: new Date().toLocaleString('ar-EG'),
+                location: formData.get('location'),
+                job_order: formData.get('job_order'),
+                answers: {}, violations: []
+            };
+
+            for(let i=1; i<=113; i++) {
+                const val = formData.get(`q${i}`);
+                report.answers[i] = val || "N/A";
+                if(val === 'مخالف') {
+                    const img = document.getElementById(`img${i}`).files[0];
+                    report.violations.push({
+                        id: i, q: qList[i-1] || `بند ${i}`, 
+                        note: document.getElementById(`note${i}`).value,
+                        photo: img ? await toBase64(img) : ""
+                    });
+                }
+            }
+
+            await fetch(`${REDIS_URL}/set/report:${reportId}`, { method:'POST', headers:{Authorization:`Bearer ${REDIS_TOKEN}`}, body: JSON.stringify(report) });
+            await fetch(`${REDIS_URL}/rpush/reports_list/${reportId}`, { method:'POST', headers:{Authorization:`Bearer ${REDIS_TOKEN}`} });
+
+            emailjs.send("service_uu3h5on", "template_6dk4ib8", {
+                inspector: report.inspector, location: report.location, serial: report.serial, v_count: report.violations.length
+            }).finally(() => {
+                alert("✅ تم إرسال التقرير بنجاح!");
+                location.reload();
+            });
+
+        } catch(err) { alert("❌ خطأ في الاتصال"); btn.disabled = false; }
+    };
+</script>
+</body>
+</html>
