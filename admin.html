@@ -1,215 +1,283 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>لوحة التحكم - الشركة السعودية للكهرباء</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
-    <!-- مكتبة أيقونات للعين -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <style>
-        :root { --sec-blue: #005a8f; --sec-orange: #f28b00; --bg: #f1f5f9; }
-        * { box-sizing: border-box; font-family: 'Cairo', sans-serif; }
-        body { background: var(--bg); margin: 0; padding: 0; }
-        
-        .admin-header { background: white; padding: 10px 20px; display: flex; align-items: center; justify-content: space-between; border-bottom: 5px solid var(--sec-orange); box-shadow: 0 2px 10px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 1000; }
-        .header-left-box { border: 2px solid var(--sec-blue); padding: 5px 10px; border-radius: 8px; text-align: center; color: var(--sec-blue); font-weight: bold; font-size: 11px; background: #f8fafc; }
-        
-        .tabs { display: flex; gap: 10px; padding: 20px; max-width: 1200px; margin: auto; }
-        .tab-btn { flex: 1; padding: 12px; border: none; border-radius: 10px; cursor: pointer; font-weight: bold; background: white; color: var(--sec-blue); border: 1px solid #ddd; }
-        .tab-btn.active { background: var(--sec-blue); color: white; }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>لوحة التحكم - الشركة السعودية للكهرباء</title>
 
-        .container { max-width: 1200px; margin: auto; padding: 0 20px; }
-        .card { background: white; padding: 20px; border-radius: 15px; margin-bottom: 25px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); border-right: 6px solid var(--sec-blue); }
-        
-        /* تنسيق خانة كلمة السر مع العين */
-        .input-group { position: relative; flex: 1; min-width: 200px; }
-        .input-group input { width: 100%; padding: 12px; padding-left: 40px; border-radius: 8px; border: 1px solid #ddd; outline: none; }
-        .toggle-password { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); cursor: pointer; color: #666; }
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-        .user-row { display: flex; justify-content: space-between; align-items: center; padding: 12px; border-bottom: 1px solid #eee; background: #fff; transition: 0.3s; }
-        .user-row:hover { background: #f8fafc; }
-        .user-actions { display: flex; gap: 8px; }
+<style>
+:root{
+  --blue:#005a8f;
+  --orange:#f28b00;
+  --bg:#f1f5f9;
+  --card:#fff;
+  --hover:#f8fafc;
+}
+*{box-sizing:border-box;font-family:'Cairo',sans-serif;margin:0;padding:0}
+body{background:var(--bg);color:#111}
 
-        .btn { padding: 8px 15px; border-radius: 8px; border: none; cursor: pointer; font-weight: bold; font-size: 13px; }
-        .btn-del { background: #fee2e2; color: #ef4444; }
-        .btn-edit { background: #e0f2fe; color: #0284c7; }
-        .btn-save { background: var(--sec-blue); color: white; width: 100%; margin-top: 10px; }
+.admin-header{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:10px 20px;background:var(--card);
+  box-shadow:0 2px 10px rgba(0,0,0,0.1);border-bottom:5px solid var(--orange);
+  position:sticky;top:0;z-index:1000;border-radius:0 0 12px 12px
+}
+.admin-header img{height:45px;border-radius:8px}
+.header-left-box{
+  border:2px solid var(--blue);padding:5px 10px;border-radius:8px;
+  text-align:center;font-size:11px;color:var(--blue);background:#f9fafb
+}
+.btn{padding:8px 15px;border-radius:8px;border:none;cursor:pointer;font-weight:bold;font-size:13px}
+.btn-del{background:#fee2e2;color:#b91c1c}
+.btn-save{background:var(--blue);color:#fff}
 
-        .search-box { width: 100%; padding: 15px; border-radius: 12px; border: 2px solid #ddd; margin-bottom: 20px; outline: none; }
-        
-        @media print { .no-print { display: none !important; } }
-    </style>
+.tabs{
+  display:flex;gap:10px;padding:15px 20px;max-width:1200px;margin:auto
+}
+.tab-btn{
+  flex:1;padding:12px;border-radius:10px;border:1px solid #ddd;
+  font-weight:bold;background:var(--card);color:var(--blue);cursor:pointer;
+  transition:.3s
+}
+.tab-btn.active{background:var(--blue);color:#fff;box-shadow:0 2px 6px rgba(0,0,0,0.1)}
+
+.container{max-width:1200px;margin:auto;padding:20px}
+
+.card{
+  background:var(--card);padding:20px;border-radius:15px;
+  margin-bottom:25px;box-shadow:0 5px 15px rgba(0,0,0,0.05);
+  transition:.3s;border-right:6px solid var(--blue)
+}
+.card:hover{background:var(--hover)}
+
+.search-box{
+  width:100%;padding:12px 15px;border-radius:12px;border:2px solid #ddd;margin-bottom:15px
+}
+
+.user-row{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:10px;border-bottom:1px solid #eee;background:var(--card);
+  border-radius:8px;margin-bottom:8px
+}
+.user-row:hover{background:var(--hover)}
+.input-group{position:relative;margin-top:6px}
+.input-group input{width:180px;padding:10px 35px 10px 10px;border-radius:8px;border:1px solid #ddd;background:#f9fafb}
+.toggle-password{position:absolute;left:10px;top:50%;transform:translateY(-50%);cursor:pointer;color:#555}
+
+.report-card{margin-bottom:12px;padding:12px;border-radius:12px;background:#fff;box-shadow:0 3px 8px rgba(0,0,0,0.05)}
+.report-card:hover{background:#f8fafc}
+
+@media print{.no-print{display:none}}
+</style>
 </head>
 <body>
 
 <div class="admin-header">
-    <div style="display:flex; align-items:center; gap:10px;">
-        <img src="imeg/imge.jpg" style="height:45px">
-        <b style="color:var(--sec-blue)">لوحة الرقابة والأرشفة</b>
-    </div>
-    <div class="header-left-box">مجموعة السلامة<br>إدارة ضواحي الرياض</div>
-    <button onclick="logout()" class="btn btn-del no-print">خروج</button>
+  <div style="display:flex;align-items:center;gap:10px">
+    <img src="imeg/imge.jpg">
+    <b style="color:var(--blue)">لوحة الرقابة والأرشفة</b>
+  </div>
+  <div class="header-left-box">مجموعة السلامة<br>إدارة ضواحي الرياض</div>
+  <button class="btn btn-del" onclick="logout()">خروج</button>
 </div>
 
-<div class="tabs no-print">
-    <button onclick="showTab('reps')" id="tR" class="tab-btn active">📋 الأرشيف والتقارير</button>
-    <button onclick="showTab('users')" id="tU" class="tab-btn">👥 إدارة المفتشين</button>
+<div class="tabs">
+  <button class="tab-btn active" id="tR" onclick="showTab('reps')">📋 التقارير</button>
+  <button class="tab-btn" id="tU" onclick="showTab('users')">👥 المفتشين</button>
 </div>
 
 <div class="container">
-    <div id="viewReps">
-        <input type="text" id="searchInput" class="search-box no-print" placeholder="🔍 ابحث بالموقع، المفتش، رقم أمر العمل..." oninput="runSearch()">
-        <div id="reportsList">جاري تحميل التقارير...</div>
-    </div>
 
-    <div id="viewUsers" style="display:none">
-        <div class="card">
-            <h3 id="userFormTitle" style="color:var(--sec-blue); margin-top:0;">➕ إضافة مفتش جديد</h3>
-            <div style="display:flex; gap:10px; flex-wrap: wrap;">
-                <input type="text" id="nu" placeholder="اسم المستخدم (Username)" style="flex:1; min-width:200px; padding:12px; border-radius:8px; border:1px solid #ddd;">
-                
-                <div class="input-group">
-                    <input type="password" id="np" placeholder="كلمة السر الجديدة">
-                    <i class="fa-solid fa-eye toggle-password" onclick="togglePassView('np', this)"></i>
-                </div>
-            </div>
-            <button onclick="addUser()" class="btn btn-save" id="btnUserAction">حفظ البيانات ✅</button>
-            <button onclick="resetUserForm()" id="btnCancelEdit" style="display:none; width:100%; margin-top:5px; background:none; border:none; color:gray; cursor:pointer;">إلغاء التعديل</button>
-        </div>
-
-        <div class="card">
-            <h3 style="color:var(--sec-blue)">👥 قائمة المفتشين المسجلين</h3>
-            <div id="usersList"></div>
-        </div>
-    </div>
+<!-- التقارير -->
+<div id="viewReps">
+  <div style="margin-bottom:10px;">
+    <button class="btn btn-save" onclick="printReports()">🖨️ طباعة PDF</button>
+    <button class="btn btn-del" onclick="deleteAllReports()">🧹 مسح كل التقارير</button>
+  </div>
+  <input id="searchInput" class="search-box" placeholder="🔍 ابحث بالمفتش أو الموقع..." oninput="runSearch()">
+  <div id="reportsList">تحميل التقارير...</div>
 </div>
 
+<!-- المفتشين -->
+<div id="viewUsers" style="display:none">
+
+<div class="card">
+<h3>➕ إضافة مفتش جديد</h3>
+<input id="newUser" class="search-box" placeholder="اسم المفتش">
+<input id="newPass" class="search-box" placeholder="كلمة السر" type="password">
+<button class="btn btn-save" onclick="addInspector()">حفظ المفتش</button>
+</div>
+
+<div class="card">
+<h3>🔍 فلتر البحث عن مفتش</h3>
+<input id="filterInspector" class="search-box" placeholder="اكتب اسم المفتش" oninput="filterInspectors()">
+</div>
+
+<div class="card">
+<h3>👥 قائمة المفتشين</h3>
+<div id="usersList">تحميل...</div>
+</div>
+
+</div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script>
-    const REDIS_URL = "https://exact-parakeet-58043.upstash.io";
-    const REDIS_TOKEN = "AeK7AAIncDFmOTAzMGJlOTM5Y2I0ZTFjYTg4ODRhOWIyNjJmZWMwY3AxNTgwNDM";
+const REDIS_URL="https://exact-parakeet-58043.upstash.io";
+const TOKEN="AeK7AAIncDFmOTAzMGJlOTM5Y2I0ZTFjYTg4ODRhOWIyNjJmZWMwY3AxNTgwNDM";
 
-    // التحقق من الدخول
-    if(sessionStorage.getItem('isAdmin') !== 'true') window.location.href = 'index.html';
+function showTab(tab){
+  viewReps.style.display=tab==="reps"?"block":"none";
+  viewUsers.style.display=tab==="users"?"block":"none";
+  tR.classList.toggle("active",tab==="reps");
+  tU.classList.toggle("active",tab==="users");
+  if(tab==="users") loadUsers(); else fetchReports();
+}
 
-    function showTab(t) {
-        document.getElementById('viewReps').style.display = t==='reps'?'block':'none';
-        document.getElementById('viewUsers').style.display = t==='users'?'block':'none';
-        document.getElementById('tR').className = t==='reps'?'tab-btn active':'tab-btn';
-        document.getElementById('tU').className = t==='users'?'tab-btn active':'tab-btn';
-        if(t==='users') loadUsers(); else fetchReports();
+// إضافة مفتش
+async function addInspector(){
+  const u=newUser.value.trim();
+  const p=newPass.value.trim();
+  if(!u||!p) return alert("ادخل الاسم وكلمة السر");
+  await fetch(`${REDIS_URL}/set/user:${u}`,{
+    method:"POST",headers:{Authorization:`Bearer ${TOKEN}`},body:p
+  });
+  newUser.value=""; newPass.value="";
+  alert("تم إضافة المفتش ✅");
+  loadUsers();
+}
+
+// إدارة المفتشين
+let allUsers=[];
+async function loadUsers(){
+  usersList.innerHTML="تحميل...";
+  const res=await fetch(`${REDIS_URL}/keys/user:*`,{headers:{Authorization:`Bearer ${TOKEN}`}});
+  const keys=(await res.json()).result||[];
+  allUsers=[];
+  for(let k of keys){
+    const name=k.split(":")[1];
+    const r=await fetch(`${REDIS_URL}/get/${k}`,{headers:{Authorization:`Bearer ${TOKEN}`}});
+    const pass=(await r.json()).result||"";
+    allUsers.push({name,pass});
+  }
+  displayUsers(allUsers);
+}
+
+function displayUsers(list){
+  usersList.innerHTML="";
+  list.forEach(u=>{
+    usersList.innerHTML+=`
+    <div class="user-row">
+      <div>
+        <b>👤 ${u.name}</b>
+        <div class="input-group">
+          <input type="password" id="p_${u.name}" value="${u.pass}">
+          <i class="fa fa-eye toggle-password" onclick="togglePass('p_${u.name}',this)"></i>
+        </div>
+        <button class="btn btn-save" onclick="updatePass('${u.name}')">💾 تحديث كلمة السر</button>
+      </div>
+      <button class="btn btn-del" onclick="delUser('user:${u.name}')">حذف</button>
+    </div>`;
+  });
+}
+
+// فلترة المفتشين
+function filterInspectors(){
+  const term=filterInspector.value.toLowerCase();
+  const filtered=allUsers.filter(u=>u.name.toLowerCase().includes(term));
+  displayUsers(filtered);
+}
+
+// تحديث كلمة السر
+async function updatePass(name){
+  const val=document.getElementById(`p_${name}`).value.trim();
+  if(!val) return alert("ادخل كلمة سر جديدة");
+  await fetch(`${REDIS_URL}/set/user:${name}`,{method:"POST",headers:{Authorization:`Bearer ${TOKEN}`},body:val});
+  alert("تم تحديث كلمة السر ✅");
+  loadUsers();
+}
+
+// إظهار/إخفاء الباسورد
+function togglePass(id,icon){
+  const inp=document.getElementById(id);
+  if(inp.type==="password"){inp.type="text";icon.classList.replace("fa-eye","fa-eye-slash");}
+  else{inp.type="password";icon.classList.replace("fa-eye-slash","fa-eye");}
+}
+
+// حذف مفتش
+async function delUser(key){
+  if(confirm("متأكد من الحذف؟")){
+    await fetch(`${REDIS_URL}/del/${key}`,{method:"POST",headers:{Authorization:`Bearer ${TOKEN}`}});
+    loadUsers();
+  }
+}
+
+// الخروج
+function logout(){sessionStorage.clear();location.href="index.html"}
+
+// التقارير
+let allReports=[];
+async function fetchReports(){
+  reportsList.innerHTML="تحميل...";
+  const r=await fetch(`${REDIS_URL}/lrange/reports_list/0/-1`,{headers:{Authorization:`Bearer ${TOKEN}`}});
+  const ids=(await r.json()).result||[];
+  allReports=[];
+  for(let id of ids){
+    const d=await fetch(`${REDIS_URL}/get/report:${id}`,{headers:{Authorization:`Bearer ${TOKEN}`}});
+    const j=await d.json();
+    if(j.result) allReports.push(JSON.parse(j.result));
+  }
+  runSearch();
+}
+
+// فلتر البحث في التقارير
+function runSearch(){
+  const t=searchInput.value.toLowerCase();
+  reportsList.innerHTML="";
+  allReports.filter(r=>
+    (r.inspector||"").toLowerCase().includes(t)||
+    (r.location||"").toLowerCase().includes(t)
+  ).reverse().forEach(r=>{
+    reportsList.innerHTML+=`
+    <div class="report-card">
+      <b>📄 تقرير #${r.serial}</b><br>
+      المفتش: ${r.inspector}<br>
+      الموقع: ${r.location}
+    </div>`;
+  });
+}
+
+// مسح كل التقارير
+async function deleteAllReports(){
+  if(confirm("متأكد من مسح كل التقارير نهائياً؟")){
+    const ids=allReports.map(r=>`report:${r.serial}`);
+    for(let id of ids){
+      await fetch(`${REDIS_URL}/del/${id}`,{method:"POST",headers:{Authorization:`Bearer ${TOKEN}`}});
     }
-
-    // إظهار وإخفاء كلمة السر
-    function togglePassView(inputId, icon) {
-        const input = document.getElementById(inputId);
-        if (input.type === "password") {
-            input.type = "text";
-            icon.classList.replace("fa-eye", "fa-eye-slash");
-        } else {
-            input.type = "password";
-            icon.classList.replace("fa-eye-slash", "fa-eye");
-        }
-    }
-
-    // إدارة المفتشين
-    async function loadUsers() {
-        const uListArea = document.getElementById('usersList');
-        uListArea.innerHTML = "جاري التحميل...";
-        try {
-            const res = await fetch(`${REDIS_URL}/keys/user:*`, { headers: { Authorization: `Bearer ${REDIS_TOKEN}` } });
-            const keys = (await res.json()).result || [];
-            let html = "";
-            for(let k of keys) {
-                const username = k.split(':')[1];
-                html += `
-                <div class="user-row">
-                    <span>👤 <b>${username}</b></span>
-                    <div class="user-actions">
-                        <button class="btn btn-edit" onclick="prepareEdit('${username}')"><i class="fa-solid fa-key"></i> تغيير الباسورد</button>
-                        <button class="btn btn-del" onclick="delUser('${k}')"><i class="fa-solid fa-trash"></i> حذف</button>
-                    </div>
-                </div>`;
-            }
-            uListArea.innerHTML = html || "لا يوجد مفتشين حالياً";
-        } catch(e) { uListArea.innerHTML = "خطأ في تحميل القائمة"; }
-    }
-
-    // تجهيز التعديل
-    function prepareEdit(user) {
-        document.getElementById('nu').value = user;
-        document.getElementById('nu').readOnly = true; // لا نغير الاسم، نغير الباسورد فقط
-        document.getElementById('userFormTitle').innerText = "🔐 تغيير كلمة سر: " + user;
-        document.getElementById('btnUserAction').innerText = "تحديث كلمة السر 💾";
-        document.getElementById('btnCancelEdit').style.display = "block";
-        document.getElementById('np').focus();
-        window.scrollTo({top: 0, behavior: 'smooth'});
-    }
-
-    function resetUserForm() {
-        document.getElementById('nu').value = "";
-        document.getElementById('nu').readOnly = false;
-        document.getElementById('np').value = "";
-        document.getElementById('userFormTitle').innerText = "➕ إضافة مفتش جديد";
-        document.getElementById('btnUserAction').innerText = "حفظ البيانات ✅";
-        document.getElementById('btnCancelEdit').style.display = "none";
-    }
-
-    async function addUser() {
-        const u = document.getElementById('nu').value.trim();
-        const p = document.getElementById('np').value.trim();
-        if(!u || !p) return alert("يرجى إدخال اسم المستخدم وكلمة السر");
-
-        try {
-            // في Redis، الـ SET تقوم بالإضافة أو التحديث تلقائياً
-            await fetch(`${REDIS_URL}/set/user:${u}`, { 
-                method: 'POST', 
-                headers: { Authorization: `Bearer ${REDIS_TOKEN}` }, 
-                body: p 
-            });
-            alert("✅ تم حفظ بيانات المفتش بنجاح");
-            resetUserForm();
-            loadUsers();
-        } catch(e) { alert("حدث خطأ في الاتصال"); }
-    }
-
-    async function delUser(key) {
-        if(confirm("هل أنت متأكد من حذف هذا المفتش نهائياً؟")) {
-            await fetch(`${REDIS_URL}/del/${key}`, { method:'POST', headers:{Authorization:`Bearer ${REDIS_TOKEN}`} });
-            loadUsers();
-        }
-    }
-
-    // دالة الخروج
-    function logout() { sessionStorage.clear(); window.location.href='index.html'; }
-
-    // (بقية دوال التقارير fetchReports, runSearch... تبقى كما هي من الكود السابق)
-    // سأضع النقاط الأساسية لضمان عمل الصفحة
-    async function fetchReports() {
-        document.getElementById('reportsList').innerHTML = "جاري التحميل...";
-        const res = await fetch(`${REDIS_URL}/lrange/reports_list/0/-1`, { headers: { Authorization: `Bearer ${REDIS_TOKEN}` } });
-        const ids = (await res.json()).result || [];
-        allReports = [];
-        for(let id of ids) {
-            const rRes = await fetch(`${REDIS_URL}/get/report:${id}`, { headers: { Authorization: `Bearer ${REDIS_TOKEN}` } });
-            const rJson = await rRes.json();
-            if(rJson.result) allReports.push(JSON.parse(rJson.result));
-        }
-        runSearch();
-    }
-
-    function runSearch() {
-        // ... (كود البحث والعرض للتقارير كما في الرد السابق)
-        const term = document.getElementById('searchInput').value.toLowerCase();
-        const area = document.getElementById('reportsList'); area.innerHTML = "";
-        const filtered = allReports.filter(r => (r.inspector||"").toLowerCase().includes(term) || (r.location||"").toLowerCase().includes(term));
-        filtered.reverse().forEach(r => {
-            area.innerHTML += `<div class="card"><b>📄 تقرير #${r.serial}</b><br>المفتش: ${r.inspector} | الموقع: ${r.location}</div>`;
-        });
-    }
-
-    // تشغيل التقارير عند الفتح
+    await fetch(`${REDIS_URL}/del/reports_list`,{method:"POST",headers:{Authorization:`Bearer ${TOKEN}`}});
     fetchReports();
+    alert("تم مسح كل التقارير ✅");
+  }
+}
+
+// طباعة PDF
+function printReports(){
+  if(allReports.length===0){alert("لا يوجد تقارير للطباعة"); return;}
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF();
+  let y=10;
+  allReports.forEach(r=>{
+    doc.text(`تقرير #${r.serial}`,10,y); y+=7;
+    doc.text(`المفتش: ${r.inspector}`,10,y); y+=7;
+    doc.text(`الموقع: ${r.location}`,10,y); y+=10;
+  });
+  doc.save("Reports.pdf");
+}
+
+fetchReports();
 </script>
 </body>
 </html>
