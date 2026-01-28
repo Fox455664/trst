@@ -1,281 +1,352 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>لوحة التحكم - الشركة السعودية للكهرباء</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة الرقابة - المشرف</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root { --main-blue: #005a8f; --main-orange: #f28b00; --bg: #f3f4f6; --text: #1f2937; --danger: #ef4444; }
+        * { box-sizing: border-box; font-family: 'Cairo', sans-serif; margin: 0; padding: 0; outline: none; }
+        body { background: var(--bg); color: var(--text); padding-bottom: 60px; }
 
-<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+        /* الهيدر */
+        .header { background: white; padding: 15px 20px; border-bottom: 4px solid var(--main-orange); display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 10px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 1000; }
+        .logo-box { display: flex; align-items: center; gap: 10px; }
+        .logo-box img { height: 50px; }
+        
+        /* الصندوق المدمج (التعديل الجديد) */
+        .dept-badge { 
+            border: 2px solid var(--main-blue); 
+            color: var(--main-blue); 
+            padding: 8px 15px; 
+            border-radius: 10px; 
+            font-weight: bold; 
+            font-size: 12px; 
+            text-align: center; 
+            background: #f0f9ff; 
+            line-height: 1.6;
+        }
+        
+        .btn-logout { background: #fee2e2; color: #dc2626; border: none; padding: 8px 15px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 13px; }
 
-<style>
-:root{
-  --blue:#005a8f;
-  --orange:#f28b00;
-  --bg:#f1f5f9;
-  --card:#fff;
-  --hover:#f8fafc;
-}
-*{box-sizing:border-box;font-family:'Cairo',sans-serif;margin:0;padding:0}
-body{background:var(--bg);color:#111}
+        /* التبويبات */
+        .nav-tabs { display: flex; gap: 10px; padding: 20px; max-width: 800px; margin: auto; }
+        .tab-btn { flex: 1; padding: 14px; border: none; border-radius: 12px; background: white; color: #6b7280; font-weight: bold; font-size: 15px; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.05); transition: 0.3s; display: flex; align-items: center; justify-content: center; gap: 8px; }
+        .tab-btn.active { background: var(--main-blue); color: white; transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0,90,143,0.2); }
 
-.admin-header{
-  display:flex;justify-content:space-between;align-items:center;
-  padding:10px 20px;background:var(--card);
-  box-shadow:0 2px 10px rgba(0,0,0,0.1);border-bottom:5px solid var(--orange);
-  position:sticky;top:0;z-index:1000;border-radius:0 0 12px 12px
-}
-.admin-header img{height:45px;border-radius:8px}
-.header-left-box{
-  border:2px solid var(--blue);padding:5px 10px;border-radius:8px;
-  text-align:center;font-size:11px;color:var(--blue);background:#f9fafb
-}
-.btn{padding:8px 15px;border-radius:8px;border:none;cursor:pointer;font-weight:bold;font-size:13px}
-.btn-del{background:#fee2e2;color:#b91c1c}
-.btn-save{background:var(--blue);color:#fff}
+        .container { max-width: 800px; margin: 0 auto; padding: 0 15px; }
+        .section { display: none; animation: fadeIn 0.4s ease; }
+        .section.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-.tabs{
-  display:flex;gap:10px;padding:15px 20px;max-width:1200px;margin:auto
-}
-.tab-btn{
-  flex:1;padding:12px;border-radius:10px;border:1px solid #ddd;
-  font-weight:bold;background:var(--card);color:var(--blue);cursor:pointer;
-  transition:.3s
-}
-.tab-btn.active{background:var(--blue);color:#fff;box-shadow:0 2px 6px rgba(0,0,0,0.1)}
+        /* الكروت */
+        .card { background: white; border-radius: 16px; padding: 20px; margin-bottom: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.02); border: 1px solid #e5e7eb; position: relative; overflow: hidden; }
+        
+        /* قسم المخالفات والملاحظات (التعديل الجديد) */
+        .violations-box { 
+            background: #fff5f5; 
+            border: 1px solid #feb2b2; 
+            border-radius: 10px; 
+            padding: 15px; 
+            margin: 15px 0; 
+        }
+        .v-title { color: #991b1b; font-weight: bold; margin-bottom: 10px; display: flex; align-items: center; gap: 5px; font-size: 14px; }
+        .v-item { background: white; padding: 10px; border-radius: 8px; border: 1px solid #fed7aa; margin-bottom: 8px; }
+        .v-note { font-size: 13px; color: #333; margin-top: 5px; background: #fffbeb; padding: 5px; border-radius: 5px; border-right: 3px solid var(--main-orange); }
+        .v-img { width: 80px; height: 80px; object-fit: cover; border-radius: 8px; margin-top: 5px; cursor: pointer; border: 2px solid #eee; }
 
-.container{max-width:1200px;margin:auto;padding:20px}
+        /* تفاصيل الكارت */
+        .r-serial { font-weight: 800; font-size: 18px; color: #111; }
+        .r-meta { font-size: 12px; color: #6b7280; }
+        .data-row { font-size: 14px; margin-bottom: 6px; color: #4b5563; display: flex; align-items: center; gap: 6px; }
 
-.card{
-  background:var(--card);padding:20px;border-radius:15px;
-  margin-bottom:25px;box-shadow:0 5px 15px rgba(0,0,0,0.05);
-  transition:.3s;border-right:6px solid var(--blue)
-}
-.card:hover{background:var(--hover)}
+        /* مودال عرض الصورة */
+        #imgModal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 9999; justify-content: center; align-items: center; }
+        #imgModal img { max-width: 95%; max-height: 80vh; border-radius: 8px; }
+        .close-modal { position: absolute; top: 20px; right: 20px; color: white; font-size: 30px; cursor: pointer; }
 
-.search-box{
-  width:100%;padding:12px 15px;border-radius:12px;border:2px solid #ddd;margin-bottom:15px
-}
+        /* الأزرار والإدخال */
+        .eye-btn { width: 100%; background: #f0f9ff; color: var(--main-blue); border: 1px solid #bae6fd; padding: 10px; margin-top: 10px; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 14px; display: flex; align-items: center; justify-content: center; gap: 8px; transition: 0.2s; }
+        .details-panel { display: none; background: #fafafa; padding: 15px; border-radius: 10px; margin-top: 15px; border: 1px solid #eee; }
+        .ans-row { display: flex; justify-content: space-between; align-items: flex-start; padding: 8px; border-bottom: 1px solid #eee; font-size: 13px; gap: 10px; }
+        .q-val { padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: bold; min-width: 65px; text-align: center; }
+        .val-yes { background: #dcfce7; color: #166534; }
+        .val-no { background: #fee2e2; color: #991b1b; }
+        
+        .input-group { margin-bottom: 15px; }
+        .custom-input { width: 100%; padding: 12px; border: 1px solid #d1d5db; border-radius: 10px; background: white; }
+        .btn-save { width: 100%; background: var(--main-blue); color: white; padding: 12px; border-radius: 10px; border: none; font-weight: bold; cursor: pointer; }
 
-.user-row{
-  display:flex;justify-content:space-between;align-items:center;
-  padding:10px;border-bottom:1px solid #eee;background:var(--card);
-  border-radius:8px;margin-bottom:8px
-}
-.user-row:hover{background:var(--hover)}
-.input-group{position:relative;margin-top:6px}
-.input-group input{width:180px;padding:10px 35px 10px 10px;border-radius:8px;border:1px solid #ddd;background:#f9fafb}
-.toggle-password{position:absolute;left:10px;top:50%;transform:translateY(-50%);cursor:pointer;color:#555}
-
-.report-card{margin-bottom:12px;padding:12px;border-radius:12px;background:#fff;box-shadow:0 3px 8px rgba(0,0,0,0.05)}
-.report-card:hover{background:#f8fafc}
-
-@media print{.no-print{display:none}}
-</style>
+        /* قائمة المفتشين */
+        .inspector-row { display: flex; justify-content: space-between; align-items: center; padding: 15px; background: white; border-bottom: 1px solid #eee; }
+    </style>
 </head>
 <body>
 
-<div class="admin-header">
-  <div style="display:flex;align-items:center;gap:10px">
-    <img src="imeg/imge.jpg">
-    <b style="color:var(--blue)">لوحة الرقابة والأرشفة</b>
-  </div>
-  <div class="header-left-box">مجموعة السلامة<br>إدارة ضواحي الرياض</div>
-  <button class="btn btn-del" onclick="logout()">خروج</button>
+<!-- نافذة تكبير الصورة -->
+<div id="imgModal" onclick="this.style.display='none'">
+    <span class="close-modal">&times;</span>
+    <img id="modalImg" src="">
 </div>
 
-<div class="tabs">
-  <button class="tab-btn active" id="tR" onclick="showTab('reps')">📋 التقارير</button>
-  <button class="tab-btn" id="tU" onclick="showTab('users')">👥 المفتشين</button>
+<div class="header">
+    <div class="logo-box">
+        <img src="imeg/imge.jpg" alt="Logo">
+        <div>
+            <div style="font-weight:bold; color:var(--main-blue); font-size:15px;">لوحة الرقابة</div>
+            <div style="font-size:11px; color:var(--main-orange);">إدارة ضواحي الرياض</div>
+        </div>
+    </div>
+    <!-- التعديل هنا: دمج النصين في صندوق واحد -->
+    <div class="dept-badge">
+        مجموعة السلامة<br>
+        إدارة ضواحي الرياض
+    </div>
+    <button class="btn-logout" onclick="logout()"><i class="fa-solid fa-power-off"></i> خروج</button>
+</div>
+
+<div class="nav-tabs">
+    <button class="tab-btn active" onclick="switchTab('reports', this)"><i class="fa-regular fa-file-lines"></i> التقارير</button>
+    <button class="tab-btn" onclick="switchTab('inspectors', this)"><i class="fa-solid fa-users-gear"></i> المفتشين</button>
 </div>
 
 <div class="container">
 
-<!-- التقارير -->
-<div id="viewReps">
-  <div style="margin-bottom:10px;">
-    <button class="btn btn-save" onclick="printReports()">🖨️ طباعة PDF</button>
-    <button class="btn btn-del" onclick="deleteAllReports()">🧹 مسح كل التقارير</button>
-  </div>
-  <input id="searchInput" class="search-box" placeholder="🔍 ابحث بالمفتش أو الموقع..." oninput="runSearch()">
-  <div id="reportsList">تحميل التقارير...</div>
-</div>
+    <!-- قسم التقارير -->
+    <div id="reports" class="section active">
+        <div style="position:relative; margin-bottom:20px;">
+            <i class="fa-solid fa-magnifying-glass" style="position:absolute; right:15px; top:12px; color:#999"></i>
+            <input type="text" id="searchRep" class="custom-input" style="padding-right:40px" placeholder="بحث برقم التقرير، المفتش..." onkeyup="renderReports()">
+        </div>
+        <div id="reportsList">جاري التحميل...</div>
+    </div>
 
-<!-- المفتشين -->
-<div id="viewUsers" style="display:none">
+    <!-- قسم المفتشين -->
+    <div id="inspectors" class="section">
+        <div class="card">
+            <h3 style="color:var(--main-blue); margin-bottom:15px">➕ إضافة مفتش جديد</h3>
+            <div class="input-group"><input id="newInspectorName" class="custom-input" placeholder="اسم المفتش"></div>
+            <div class="input-group"><input id="newInspectorPass" class="custom-input" placeholder="كلمة السر"></div>
+            <button class="btn-save" onclick="addInspector()">حفظ المفتش</button>
+        </div>
+        <div class="card">
+            <h3 style="color:var(--main-blue); margin-bottom:15px">👥 قائمة المفتشين</h3>
+            <div id="usersListContainer"></div>
+        </div>
+    </div>
 
-<div class="card">
-<h3>➕ إضافة مفتش جديد</h3>
-<input id="newUser" class="search-box" placeholder="اسم المفتش">
-<input id="newPass" class="search-box" placeholder="كلمة السر" type="password">
-<button class="btn btn-save" onclick="addInspector()">حفظ المفتش</button>
-</div>
-
-<div class="card">
-<h3>🔍 فلتر البحث عن مفتش</h3>
-<input id="filterInspector" class="search-box" placeholder="اكتب اسم المفتش" oninput="filterInspectors()">
-</div>
-
-<div class="card">
-<h3>👥 قائمة المفتشين</h3>
-<div id="usersList">تحميل...</div>
-</div>
-
-</div>
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script>
-const REDIS_URL="https://exact-parakeet-58043.upstash.io";
-const TOKEN="AeK7AAIncDFmOTAzMGJlOTM5Y2I0ZTFjYTg4ODRhOWIyNjJmZWMwY3AxNTgwNDM";
+const REDIS_URL = "https://exact-parakeet-58043.upstash.io";
+const REDIS_TOKEN = "AeK7AAIncDFmOTAzMGJlOTM5Y2I0ZTFjYTg4ODRhOWIyNjJmZWMwY3AxNTgwNDM";
 
-function showTab(tab){
-  viewReps.style.display=tab==="reps"?"block":"none";
-  viewUsers.style.display=tab==="users"?"block":"none";
-  tR.classList.toggle("active",tab==="reps");
-  tU.classList.toggle("active",tab==="users");
-  if(tab==="users") loadUsers(); else fetchReports();
+// القائمة الكاملة
+const fullQuestionsList = [
+    "تصريح العمل الأساسي والثانوي متواجد بموقع العمل",
+    "اجتماع ما قبل البدء بالعمل متواجد بموقع العمل",
+    "نموذج فريق العمل متواجد بموقع العمل (مذكور رقم المقايسة – وصف العمل – رقم التصريح – توقيع مشرف الكهرب والشركة)",
+    "إجراءات العمل الآمن وتقييم المخاطر وتوفرها بلغات مناسبة",
+    "إلمام المستلم وفريق العمل بإجراءات العمل الآمن وتقييم المخاطر للمهمة",
+    "ملاحظات",
+    "بطاقة تعميد المصدر والمستلم والعامل المشارك سارية وبصلاحيات مناسبة للعمل",
+    "تأهيل سائق المعدات (سائق ونش – سلة هوائية -........)",
+    "المستلم متواجد بموقع العمل",
+    "وضع أقفال السلامة و البطاقات التحذيرية و إكتمال بيانات التواصل",
+    "التأكد من تركيب الأرضي المتنقل من الجهتين",
+    "التأكد من فعالية جهاز كشف الجهد التستر",
+    "التأكد من تواجد نموذج فحص المركبة والعدد والادوات متواجد شهادة المسعف والمكافح وفحص المركبة والباركود الخاص بالخطط",
+    "نماذج الفحص",
+    "نموذج فحص المركبة",
+    "نموذج فحص العدد والادوات",
+    "شهادة المسعف",
+    "شهادة المكافح",
+    "شهادة tuv",
+    "QR Code",
+    "فحص معدات الرفع و الحفر من قبل طرف ثالث (تى يو فى)",
+    "التأكد من مطابقة السلات للمواصفات ( كفرات – زيوت – كسور – حزام الأمان – تكدس مواد .. الخ)",
+    "التأكد من سلامة خطاف الونش واحبال الرفع",
+    "طفاية حريق سليمة ومفحوصة وسلامة استكر الفحص",
+    "شنطة إسعافات مكتملة ومفحوصة",
+    "التأكد من تركيب الأرضي للسيارات",
+    "الحمل الأقصى محدد بوضوح على جميع معدات الرفع",
+    "مهام الوقاية الشخصية سليمة (بسؤال الموظف والتفتيش علية) خوذة - ملابس – حذاء",
+    "التفتيش على القفاز المطاطي (33000 – 13000 – 1000) ك.ف.أ",
+    "الخوذة الكهربائية مزودة بحامى وجة",
+    "أحزمة السلامة مرقمة وسليمة",
+    "استخدام حواجز حماية سليمة وكافية و شريط تحذيري",
+    "كفاية اللوحات الإرشادية المرورية",
+    "الترميز بالألوان حسب الشهر للعدد والأدوات وأدوات السلامة",
+    "تخزين أسطوانات الغاز وأسطوانات الاكسجين واللحام وترميزها",
+    "وجود أغطية الحماية لأسطوانات الغاز والأكسجين",
+    "ليات الاوكسي استيلين لا يوجد بها تشققات او تالفة",
+    "سلامة المنظم والعدادات",
+    "وجود شعار المقاول على المركبات والمعدات",
+    "تم ازالة المخلفات بعد الانتهاء من العمل",
+    "خطط متعلقة بتصاريح العمل",
+    "خطة الطوارئ",
+    "خطة المنع من السقوط",
+    "خطة الإنقاذ في العمل على المرتفعات",
+    "خطة رفع الأحمال الحرجة",
+    "إجراء وملصقات حماية السمع",
+    "ملصقات العمل على مرتفعات اوملصق أغراض متساقطة",
+    "التأكد من خطاف الونش واحبال الرفع",
+    "الحمل الأقصى محدد بوضوح على جميع معدات الرفع",
+    "مهام الوقاية الشخصية سليمة (بسؤال الموظف والتفتيش علية) خوذة - ملابس – حذاء",
+    "التفتيش على القفاز المطاطي (33000 – 13000 – 1000) ك.ف.أ",
+    "الخوذة الكهربائية مزودة بحامى وجة",
+    "أحزمة السلامة مرقمة وسليمة"
+];
+
+let allReports = [];
+if(sessionStorage.getItem('isAdmin')!=='true') location.href='trs.html';
+
+function switchTab(t,b){
+    document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(bb=>bb.classList.remove('active'));
+    document.getElementById(t).classList.add('active');
+    b.classList.add('active');
+    if(t==='inspectors') loadUsers();
 }
 
-// إضافة مفتش
-async function addInspector(){
-  const u=newUser.value.trim();
-  const p=newPass.value.trim();
-  if(!u||!p) return alert("ادخل الاسم وكلمة السر");
-  await fetch(`${REDIS_URL}/set/user:${u}`,{
-    method:"POST",headers:{Authorization:`Bearer ${TOKEN}`},body:p
-  });
-  newUser.value=""; newPass.value="";
-  alert("تم إضافة المفتش ✅");
-  loadUsers();
-}
-
-// إدارة المفتشين
-let allUsers=[];
-async function loadUsers(){
-  usersList.innerHTML="تحميل...";
-  const res=await fetch(`${REDIS_URL}/keys/user:*`,{headers:{Authorization:`Bearer ${TOKEN}`}});
-  const keys=(await res.json()).result||[];
-  allUsers=[];
-  for(let k of keys){
-    const name=k.split(":")[1];
-    const r=await fetch(`${REDIS_URL}/get/${k}`,{headers:{Authorization:`Bearer ${TOKEN}`}});
-    const pass=(await r.json()).result||"";
-    allUsers.push({name,pass});
-  }
-  displayUsers(allUsers);
-}
-
-function displayUsers(list){
-  usersList.innerHTML="";
-  list.forEach(u=>{
-    usersList.innerHTML+=`
-    <div class="user-row">
-      <div>
-        <b>👤 ${u.name}</b>
-        <div class="input-group">
-          <input type="password" id="p_${u.name}" value="${u.pass}">
-          <i class="fa fa-eye toggle-password" onclick="togglePass('p_${u.name}',this)"></i>
-        </div>
-        <button class="btn btn-save" onclick="updatePass('${u.name}')">💾 تحديث كلمة السر</button>
-      </div>
-      <button class="btn btn-del" onclick="delUser('user:${u.name}')">حذف</button>
-    </div>`;
-  });
-}
-
-// فلترة المفتشين
-function filterInspectors(){
-  const term=filterInspector.value.toLowerCase();
-  const filtered=allUsers.filter(u=>u.name.toLowerCase().includes(term));
-  displayUsers(filtered);
-}
-
-// تحديث كلمة السر
-async function updatePass(name){
-  const val=document.getElementById(`p_${name}`).value.trim();
-  if(!val) return alert("ادخل كلمة سر جديدة");
-  await fetch(`${REDIS_URL}/set/user:${name}`,{method:"POST",headers:{Authorization:`Bearer ${TOKEN}`},body:val});
-  alert("تم تحديث كلمة السر ✅");
-  loadUsers();
-}
-
-// إظهار/إخفاء الباسورد
-function togglePass(id,icon){
-  const inp=document.getElementById(id);
-  if(inp.type==="password"){inp.type="text";icon.classList.replace("fa-eye","fa-eye-slash");}
-  else{inp.type="password";icon.classList.replace("fa-eye-slash","fa-eye");}
-}
-
-// حذف مفتش
-async function delUser(key){
-  if(confirm("متأكد من الحذف؟")){
-    await fetch(`${REDIS_URL}/del/${key}`,{method:"POST",headers:{Authorization:`Bearer ${TOKEN}`}});
-    loadUsers();
-  }
-}
-
-// الخروج
-function logout(){sessionStorage.clear();location.href="index.html"}
-
-// التقارير
-let allReports=[];
 async function fetchReports(){
-  reportsList.innerHTML="تحميل...";
-  const r=await fetch(`${REDIS_URL}/lrange/reports_list/0/-1`,{headers:{Authorization:`Bearer ${TOKEN}`}});
-  const ids=(await r.json()).result||[];
-  allReports=[];
-  for(let id of ids){
-    const d=await fetch(`${REDIS_URL}/get/report:${id}`,{headers:{Authorization:`Bearer ${TOKEN}`}});
-    const j=await d.json();
-    if(j.result) allReports.push(JSON.parse(j.result));
-  }
-  runSearch();
-}
-
-// فلتر البحث في التقارير
-function runSearch(){
-  const t=searchInput.value.toLowerCase();
-  reportsList.innerHTML="";
-  allReports.filter(r=>
-    (r.inspector||"").toLowerCase().includes(t)||
-    (r.location||"").toLowerCase().includes(t)
-  ).reverse().forEach(r=>{
-    reportsList.innerHTML+=`
-    <div class="report-card">
-      <b>📄 تقرير #${r.serial}</b><br>
-      المفتش: ${r.inspector}<br>
-      الموقع: ${r.location}
-    </div>`;
-  });
-}
-
-// مسح كل التقارير
-async function deleteAllReports(){
-  if(confirm("متأكد من مسح كل التقارير نهائياً؟")){
-    const ids=allReports.map(r=>`report:${r.serial}`);
-    for(let id of ids){
-      await fetch(`${REDIS_URL}/del/${id}`,{method:"POST",headers:{Authorization:`Bearer ${TOKEN}`}});
+    const res = await fetch(`${REDIS_URL}/lrange/reports_list/0/-1`,{headers:{Authorization:`Bearer ${REDIS_TOKEN}`}});
+    const ids = (await res.json()).result||[];
+    allReports=[];
+    for(const id of ids){
+        const r = await fetch(`${REDIS_URL}/get/report:${id}`,{headers:{Authorization:`Bearer ${REDIS_TOKEN}`}});
+        const data = await r.json();
+        if(data.result) allReports.push(JSON.parse(data.result));
     }
-    await fetch(`${REDIS_URL}/del/reports_list`,{method:"POST",headers:{Authorization:`Bearer ${TOKEN}`}});
-    fetchReports();
-    alert("تم مسح كل التقارير ✅");
-  }
+    allReports.reverse();
+    renderReports();
 }
 
-// طباعة PDF
-function printReports(){
-  if(allReports.length===0){alert("لا يوجد تقارير للطباعة"); return;}
-  const { jsPDF } = window.jspdf;
-  const doc = new jsPDF();
-  let y=10;
-  allReports.forEach(r=>{
-    doc.text(`تقرير #${r.serial}`,10,y); y+=7;
-    doc.text(`المفتش: ${r.inspector}`,10,y); y+=7;
-    doc.text(`الموقع: ${r.location}`,10,y); y+=10;
-  });
-  doc.save("Reports.pdf");
+function renderReports(){
+    const term = document.getElementById('searchRep').value.toLowerCase();
+    const list = document.getElementById('reportsList');
+    list.innerHTML = "";
+    const filtered = allReports.filter(r=>(r.inspector||"").toLowerCase().includes(term)||(r.serial||"").includes(term));
+    
+    if(!filtered.length){ list.innerHTML="<p style='text-align:center'>لا توجد تقارير</p>"; return; }
+
+    filtered.forEach(r=>{
+        // 🔴 منطق المخالفات المحدث: إظهار أي بند له ملاحظة أو صورة أو إجابة "لا"
+        let violationsHtml = '';
+        if(r.violations && r.violations.length > 0) {
+            violationsHtml = `<div class="violations-box"><div class="v-title"><i class="fa-solid fa-triangle-exclamation"></i> الملاحظات والمخالفات المرصودة:</div>`;
+            r.violations.forEach(v => {
+                const note = v.note ? `<div class="v-note">📝 ${v.note}</div>` : '';
+                // إضافة onclick لتكبير الصورة
+                const img = v.photo ? `<br><img src="${v.photo}" class="v-img" onclick="showImg('${v.photo}')">` : '';
+                
+                violationsHtml += `
+                <div class="v-item">
+                    <div style="font-weight:bold; font-size:13px; margin-bottom:5px;">🔹 ${v.q}</div>
+                    <span class="${v.ans==='نعم'?'val-yes':'val-no'}" style="padding:2px 8px; border-radius:10px; font-size:11px;">${v.ans}</span>
+                    ${note}
+                    ${img}
+                </div>`;
+            });
+            violationsHtml += `</div>`;
+        }
+
+        list.innerHTML += `
+        <div class="card">
+            <div class="report-header">
+                <div><div class="r-serial">#${r.serial}</div><div class="r-meta">${r.timestamp}</div></div>
+                <div><div style="font-weight:bold; color:var(--main-blue)">${r.inspector}</div></div>
+            </div>
+            <div class="data-row">📍 الموقع: <b>${r.location}</b></div>
+            <div class="data-row">🏗️ العمل: <b>${r.work_desc}</b></div>
+            
+            ${violationsHtml}
+
+            <button class="eye-btn" onclick="toggleDetails(this, '${r.serial}')">
+                <i class="fa-regular fa-eye"></i> تفاصيل الـ ${fullQuestionsList.length} بند
+            </button>
+            <div class="details-panel" id="panel-${r.serial}"></div>
+
+            <div style="display:flex; gap:10px; margin-top:15px">
+                <button onclick="delRep(${r.serial})" style="flex:1; background:#fee2e2; color:#b91c1c; border:none; padding:10px; border-radius:8px; cursor:pointer; font-weight:bold;">حذف</button>
+                <button onclick="printRep(${r.serial})" style="flex:1; background:#e0f2fe; color:#0369a1; border:none; padding:10px; border-radius:8px; cursor:pointer; font-weight:bold;">طباعة</button>
+            </div>
+        </div>`;
+    });
 }
+
+function toggleDetails(btn, serial){
+    const p = document.getElementById(`panel-${serial}`);
+    if(p.style.display==='block'){ p.style.display='none'; return; }
+    const r = allReports.find(x=>x.serial==serial);
+    let h = `<div style="padding:10px; border:1px solid #ddd; border-radius:8px; margin-bottom:10px; font-size:12px">
+        <p>المشرف: ${r.supervisor_name}</p><p>المستلم: ${r.receiver_name}</p><p>الحي: ${r.district}</p>
+    </div>`;
+    fullQuestionsList.forEach((q,i)=>{
+        const ans = r.answers && r.answers[i+1] ? r.answers[i+1] : "N/A";
+        h += `<div class="ans-row"><div style="flex:1">${q}</div><div class="q-val ${ans==='نعم'?'val-yes':ans==='لا'?'val-no':'val-na'}">${ans}</div></div>`;
+    });
+    p.innerHTML = h;
+    p.style.display='block';
+}
+
+function showImg(src){
+    document.getElementById('modalImg').src = src;
+    document.getElementById('imgModal').style.display = 'flex';
+}
+
+async function loadUsers(){
+    const list = document.getElementById('usersListContainer');
+    list.innerHTML='تحميل...';
+    const keys = (await (await fetch(`${REDIS_URL}/keys/user:*`,{headers:{Authorization:`Bearer ${REDIS_TOKEN}`}})).json()).result||[];
+    list.innerHTML='';
+    for(const k of keys){
+        if(k==='user:admin') continue;
+        const n = k.split(':')[1];
+        const p = (await (await fetch(`${REDIS_URL}/get/${k}`,{headers:{Authorization:`Bearer ${REDIS_TOKEN}`}})).json()).result;
+        list.innerHTML += `
+        <div class="inspector-row">
+            <div><b>👤 ${n}</b></div>
+            <div style="display:flex; align-items:center; gap:10px">
+                <input type="password" value="${p}" readonly style="border:none; background:none; width:60px" onclick="this.type='text'">
+                <button onclick="delUser('${n}')" style="background:#fee2e2; color:red; border:none; padding:5px 10px; border-radius:5px; cursor:pointer">حذف</button>
+            </div>
+        </div>`;
+    }
+}
+
+async function addInspector(){
+    const n=newInspectorName.value, p=newInspectorPass.value;
+    if(!n||!p) return alert('أكمل البيانات');
+    await fetch(`${REDIS_URL}/set/user:${n}`,{method:'POST',headers:{Authorization:`Bearer ${REDIS_TOKEN}`},body:p});
+    alert('تم'); loadUsers();
+}
+
+async function delUser(n){
+    if(confirm('حذف؟')) await fetch(`${REDIS_URL}/del/user:${n}`,{method:'POST',headers:{Authorization:`Bearer ${REDIS_TOKEN}`}});
+    loadUsers();
+}
+
+async function delRep(s){
+    if(confirm('حذف التقرير؟')){
+        await fetch(`${REDIS_URL}/del/report:${s}`,{method:'POST',headers:{Authorization:`Bearer ${REDIS_TOKEN}`}});
+        await fetch(`${REDIS_URL}/lrem/reports_list/0/${s}`,{method:'POST',headers:{Authorization:`Bearer ${REDIS_TOKEN}`}});
+        fetchReports();
+    }
+}
+
+function printRep(s){
+    const r = allReports.find(x=>x.serial==s);
+    let rows = "";
+    r.violations.forEach(v=>{ rows+=`<tr><td>${v.q}</td><td>${v.ans}</td><td>${v.note||''} ${v.photo?'(صورة)':''}</td></tr>`; });
+    const w = window.open('','','width=800,height=800');
+    w.document.write(`<h2 style="text-align:center">تقرير #${s}</h2><table border="1" style="width:100%; direction:rtl; border-collapse:collapse"><tr><th>البند</th><th>الحالة</th><th>ملاحظات</th></tr>${rows}</table><script>window.print()<\/script>`);
+}
+
+function logout(){ sessionStorage.clear(); location.href='trs.html'; }
 
 fetchReports();
 </script>
