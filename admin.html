@@ -10,76 +10,61 @@
         * { box-sizing: border-box; font-family: 'Cairo', sans-serif; }
         body { background: var(--bg); margin: 0; padding: 0; }
         
-        .admin-header { background: white; padding: 15px 30px; display: flex; align-items: center; justify-content: space-between; border-bottom: 5px solid var(--sec-orange); box-shadow: 0 2px 10px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 1000; }
-        .admin-header img { height: 50px; }
-        .admin-title { color: var(--sec-blue); font-weight: bold; font-size: 18px; }
-
+        .admin-header { background: white; padding: 10px 20px; display: flex; align-items: center; justify-content: space-between; border-bottom: 5px solid var(--sec-orange); box-shadow: 0 2px 10px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 1000; }
+        .header-left-box { border: 2px solid var(--sec-blue); padding: 5px 10px; border-radius: 8px; text-align: center; color: var(--sec-blue); font-weight: bold; font-size: 11px; background: #f8fafc; }
+        
         .tabs { display: flex; gap: 10px; padding: 20px; max-width: 1200px; margin: auto; }
-        .tab-btn { flex: 1; padding: 12px; border: none; border-radius: 10px; cursor: pointer; font-weight: bold; background: white; color: var(--sec-blue); border: 1px solid #ddd; transition: 0.3s; }
+        .tab-btn { flex: 1; padding: 12px; border: none; border-radius: 10px; cursor: pointer; font-weight: bold; background: white; color: var(--sec-blue); border: 1px solid #ddd; }
         .tab-btn.active { background: var(--sec-blue); color: white; }
 
         .container { max-width: 1200px; margin: auto; padding: 0 20px; }
-        .search-box { width: 100%; padding: 15px; border-radius: 12px; border: 2px solid #ddd; margin-bottom: 20px; outline: none; font-size: 16px; }
+        .search-box { width: 100%; padding: 15px; border-radius: 12px; border: 2px solid #ddd; margin-bottom: 20px; outline: none; }
+        .card { background: white; padding: 20px; border-radius: 15px; margin-bottom: 25px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); border-right: 6px solid var(--sec-blue); }
         
-        .card { background: white; padding: 20px; border-radius: 15px; margin-bottom: 25px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); border-right: 6px solid var(--sec-blue); position: relative; }
-        
-        .status-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 8px; margin-top: 15px; background: #f9f9f9; padding: 15px; border-radius: 10px; }
-        .stat-item { padding: 6px; border-radius: 5px; font-size: 10px; text-align: center; color: white; font-weight: bold; line-height: 1.2; }
-        .safe { background: #22c55e; } 
-        .danger { background: #ef4444; } 
-        .na { background: #94a3b8; }
+        .status-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 5px; margin-top: 15px; background: #f9f9f9; padding: 10px; border-radius: 10px; }
+        .stat-item { padding: 4px; border-radius: 4px; font-size: 9px; text-align: center; color: white; font-weight: bold; }
+        .safe { background: #22c55e; } .danger { background: #ef4444; } .na { background: #94a3b8; }
 
-        .v-card { margin-top: 15px; border: 1px solid #eee; padding: 15px; border-radius: 10px; background: #fffcf5; }
-        .img-thumb { width: 150px; height: 150px; object-fit: cover; border-radius: 10px; cursor: pointer; margin-top: 10px; border: 2px solid #ddd; transition: 0.3s; }
-        .img-thumb:hover { transform: scale(1.05); }
+        .v-card { margin-top: 10px; border: 1px solid #eee; padding: 10px; border-radius: 8px; background: #fffcf5; }
+        .img-thumb { width: 100px; height: 100px; object-fit: cover; border-radius: 8px; cursor: pointer; margin-top: 5px; border: 1px solid #ddd; }
         
         #imgModal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 10001; align-items: center; justify-content: center; }
-        .btn { padding: 10px 20px; border-radius: 8px; border: none; cursor: pointer; font-weight: bold; transition: 0.3s; }
+        .btn { padding: 8px 15px; border-radius: 8px; border: none; cursor: pointer; font-weight: bold; }
         .btn-del { background: #fee2e2; color: #ef4444; }
-        .btn-del:hover { background: #ef4444; color: white; }
         .btn-print { background: var(--sec-blue); color: white; }
-
-        /* تنسيقات الطباعة */
-        @media print { 
-            .no-print { display: none !important; } 
-            body { background: white; }
-            .card { border: 1px solid #ccc; box-shadow: none; page-break-inside: avoid; margin-bottom: 50px; }
-            details { display: block !important; }
-            details summary { display: none; }
-            .status-grid { display: grid !important; }
-        }
+        @media print { .no-print { display: none !important; } .card { border: 1px solid #ccc; page-break-inside: avoid; } details { display: block !important; } }
     </style>
 </head>
 <body>
 
-<div id="imgModal" onclick="this.style.display='none'">
-    <img id="modalImg" src="" style="max-width:95%; max-height:95%; border-radius:10px; box-shadow: 0 0 20px rgba(255,255,255,0.2);">
-</div>
+<div id="imgModal" onclick="this.style.display='none'"><img id="modalImg" style="max-width:90%; max-height:90%; border-radius:10px;"></div>
 
 <div class="admin-header">
-    <img src="imeg/imge.jpg" class="logo-hero" onerror="this.src='https://via.placeholder.com/150x50?text=SEC+LOGO'">
-    <div class="admin-title">لوحة الرقابة المركزية 📊</div>
-    <button onclick="logout()" class="btn btn-del no-print">خروج 🚪</button>
+    <div style="display:flex; align-items:center; gap:10px;">
+        <img src="imeg/imge.jpg" style="height:45px">
+        <b style="color:var(--sec-blue)">لوحة الرقابة</b>
+    </div>
+    <div class="header-left-box">مجموعة السلامة<br>إدارة ضواحي الرياض</div>
+    <button onclick="logout()" class="btn btn-del no-print">خروج</button>
 </div>
 
 <div class="tabs no-print">
-    <button onclick="showTab('reps')" id="tR" class="tab-btn active">📋 عرض التقارير</button>
-    <button onclick="showTab('users')" id="tU" class="tab-btn">👥 إدارة المفتشين</button>
+    <button onclick="showTab('reps')" id="tR" class="tab-btn active">📋 التقارير</button>
+    <button onclick="showTab('users')" id="tU" class="tab-btn">👥 المفتشين</button>
 </div>
 
 <div class="container">
     <div id="viewReps">
-        <input type="text" id="searchInput" class="search-box no-print" placeholder="🔍 ابحث برقم التقرير، الموقع، المفتش، أو أمر العمل..." oninput="runSearch()">
-        <div id="reportsList">جاري تحميل البيانات من السيرفر... ⏳</div>
+        <input type="text" id="searchInput" class="search-box no-print" placeholder="🔍 ابحث بالموقع، المفتش، أو رقم أمر العمل..." oninput="runSearch()">
+        <div id="reportsList">جاري التحميل...</div>
     </div>
-
     <div id="viewUsers" style="display:none">
-        <div class="card no-print">
-            <h3>➕ إضافة مفتش جديد للنظام</h3>
-            <div style="display:flex; gap:10px; flex-wrap: wrap;">
-                <input type="text" id="nu" placeholder="اسم المستخدم" style="flex:1; min-width:150px;">
-                <input type="text" id="np" placeholder="كلمة السر" style="flex:1; min-width:150px;">
-                <button onclick="addUser()" class="btn btn-print">إضافة المفتش</button>
+        <div class="card">
+            <h3>➕ إضافة مفتش جديد</h3>
+            <div style="display:flex; gap:10px">
+                <input type="text" id="nu" placeholder="اسم المستخدم">
+                <input type="text" id="np" placeholder="كلمة السر">
+                <button onclick="addUser()" class="btn btn-print">إضافة</button>
             </div>
         </div>
         <div id="usersList"></div>
@@ -91,7 +76,6 @@
     const REDIS_TOKEN = "AeK7AAIncDFmOTAzMGJlOTM5Y2I0ZTFjYTg4ODRhOWIyNjJmZWMwY3AxNTgwNDM";
     let allReports = [];
 
-    // التحقق من صلاحية الإدمن
     if(sessionStorage.getItem('isAdmin') !== 'true') window.location.href = 'index.html';
 
     function showTab(t) {
@@ -106,164 +90,61 @@
         try {
             const res = await fetch(`${REDIS_URL}/lrange/reports_list/0/-1`, { headers: { Authorization: `Bearer ${REDIS_TOKEN}` } });
             const ids = (await res.json()).result || [];
-            
-            const area = document.getElementById('reportsList');
-            if(ids.length === 0) { area.innerHTML = "لا توجد تقارير حالياً"; return; }
-
             allReports = [];
             for(let id of ids) {
                 const rRes = await fetch(`${REDIS_URL}/get/report:${id}`, { headers: { Authorization: `Bearer ${REDIS_TOKEN}` } });
-                const rData = await rRes.json();
-                if(rData.result) {
-                    try {
-                        allReports.push(JSON.parse(rData.result));
-                    } catch(e) { console.error("Error parsing report:", id); }
-                }
+                const rJson = await rRes.json();
+                if(rJson.result) allReports.push(JSON.parse(rJson.result));
             }
             runSearch();
-        } catch(e) { 
-            document.getElementById('reportsList').innerHTML = "❌ فشل الاتصال بقاعدة البيانات"; 
-        }
+        } catch(e) { document.getElementById('reportsList').innerHTML = "خطأ في التحميل"; }
     }
 
     function runSearch() {
         const term = document.getElementById('searchInput').value.toLowerCase();
         const filtered = allReports.filter(r => 
-            (r.inspector || "").toLowerCase().includes(term) || 
-            (r.serial || "").toString().includes(term) || 
-            (r.location || "").toLowerCase().includes(term) ||
-            (r.job_order || "").toLowerCase().includes(term)
+            (r.inspector || "").toLowerCase().includes(term) || (r.location || "").toLowerCase().includes(term) || (r.job_order || "").toLowerCase().includes(term)
         );
-
-        const area = document.getElementById('reportsList'); 
-        area.innerHTML = "";
-
-        if(filtered.length === 0) { area.innerHTML = "🔍 لا توجد نتائج مطابقة للبحث"; return; }
-
-        // ترتيب التقارير من الأحدث للأقدم
-        [...filtered].reverse().forEach(r => {
+        const area = document.getElementById('reportsList'); area.innerHTML = "";
+        filtered.reverse().forEach(r => {
             let statusHtml = "";
-            if(r.answers) {
-                Object.keys(r.answers).forEach(key => {
-                    let ans = r.answers[key];
-                    let cls = ans === 'نعم' ? 'safe' : (ans === 'لا' ? 'danger' : 'na');
-                    statusHtml += `<div class="stat-item ${cls}">بند ${key}: ${ans}</div>`;
-                });
-            }
-
+            Object.keys(r.answers || {}).forEach(k => {
+                let a = r.answers[k];
+                let c = a === 'نعم' ? 'safe' : (a === 'لا' ? 'danger' : 'na');
+                statusHtml += `<div class="stat-item ${c}">بند ${k}: ${a}</div>`;
+            });
             let vHtml = "";
             (r.violations || []).forEach(v => {
                 vHtml += `
                 <div class="v-card">
-                    <b style="color:var(--sec-blue)">📍 بند ${v.id || v.q_num}: ${v.q || v.question}</b> 
-                    <span style="float:left; font-weight:bold; color:${v.ans === 'لا' ? 'red' : 'inherit'}">${v.ans || v.status}</span>
-                    <p style="margin: 10px 0 5px 0;">📝 الملاحظة: ${v.note || "لا توجد ملاحظات مكتوبة"}</p>
+                    <b style="color:var(--sec-blue)">📍 ${v.q}</b> [${v.ans}]
+                    <p style="margin:5px 0">📝: ${v.note || "لا توجد ملاحظة"}</p>
                     ${v.photo ? `<img src="${v.photo}" class="img-thumb" onclick="openImg(this.src)">` : ""}
                 </div>`;
             });
-
             area.innerHTML += `
                 <div class="card">
-                    <div style="display:flex; justify-content:space-between; border-bottom:1px solid #eee; padding-bottom:10px; margin-bottom:10px;">
-                        <b>📄 تقرير رقم: ${r.serial}</b>
-                        <span>🕒 ${r.timestamp}</span>
+                    <div style="display:flex; justify-content:space-between; border-bottom:1px solid #eee; padding-bottom:5px">
+                        <b>📄 تقرير #${r.serial}</b><span>🕒 ${r.timestamp}</span>
                     </div>
-                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 14px;">
-                        <div>👷 المفتش: <b>${r.inspector}</b></div>
-                        <div>📍 الموقع: <b>${r.location}</b></div>
-                        <div>📄 المهمة/أمر العمل: <b>${r.job_order}</b></div>
-                        <div>🏘️ الحي: <b>${r.district || 'غير محدد'}</b></div>
+                    <p>👷 المفتش: <b>${r.inspector}</b> | 📍 الموقع: ${r.location} | 📄 المهمة: ${r.job_order}</p>
+                    <details class="no-print"><summary style="cursor:pointer; color:var(--sec-orange); font-weight:bold;">👁️ ملخص جميع البنود (34 بند)</summary>
+                    <div class="status-grid">${statusHtml}</div></details>
+                    <div style="margin-top:10px">
+                        <h4 style="margin-bottom:5px; color:var(--sec-blue); border-bottom:1px solid #eee;">الملاحظات والمرفقات:</h4>
+                        ${vHtml || "لا توجد مرفقات"}
                     </div>
-
-                    <details class="no-print" style="margin-top:15px;">
-                        <summary style="cursor:pointer; color:var(--sec-orange); font-weight:bold;">👁️ عرض حالة جميع البنود (34 بند)</summary>
-                        <div class="status-grid">${statusHtml}</div>
-                    </details>
-                    
-                    <div class="print-only-grid status-grid" style="display:none;">${statusHtml}</div>
-
-                    <div style="margin-top:20px">
-                        <h4 style="margin-bottom:10px; color:var(--sec-blue); border-bottom: 1px solid #eee;">المرفقات والمخالفات المرصودة:</h4>
-                        ${vHtml || "<p style='color:gray'>✅ لا توجد ملاحظات أو صور مرفقة بهذا التقرير</p>"}
-                    </div>
-
-                    <div class="no-print" style="margin-top:20px; display:flex; gap:10px;">
-                        <button class="btn btn-print" onclick="preparePrint(this)">طباعة التقرير 🖨️</button>
-                        <button class="btn btn-del" onclick="deleteRep('${r.serial}')">حذف من السيرفر 🗑️</button>
+                    <div class="no-print" style="margin-top:15px; display:flex; gap:10px;">
+                        <button class="btn btn-print" onclick="window.print()">طباعة 🖨️</button>
+                        <button class="btn btn-del" onclick="deleteRep('${r.serial}')">حذف 🗑️</button>
                     </div>
                 </div>`;
         });
     }
 
-    function preparePrint(btn) {
-        // فتح الـ details تلقائياً قبل الطباعة
-        const card = btn.closest('.card');
-        const det = card.querySelector('details');
-        if(det) det.open = true;
-        window.print();
-    }
-
-    function openImg(s) { 
-        document.getElementById('modalImg').src = s; 
-        document.getElementById('imgModal').style.display = 'flex'; 
-    }
-
+    function openImg(s) { document.getElementById('modalImg').src = s; document.getElementById('imgModal').style.display = 'flex'; }
     function logout() { sessionStorage.clear(); window.location.href='index.html'; }
 
     async function deleteRep(id) {
-        if(confirm("❗ هل أنت متأكد من حذف هذا التقرير نهائياً من قاعدة البيانات؟")) {
-            try {
-                await fetch(`${REDIS_URL}/del/report:${id}`, { headers: { Authorization: `Bearer ${REDIS_TOKEN}` } });
-                await fetch(`${REDIS_URL}/lrem/reports_list/0/${id}`, { method:'POST', headers: { Authorization: `Bearer ${REDIS_TOKEN}` } });
-                alert("تم الحذف بنجاح");
-                fetchReports();
-            } catch(e) { alert("خطأ في الحذف"); }
-        }
-    }
-
-    async function loadUsers() {
-        const res = await fetch(`${REDIS_URL}/smembers/inspectors`, { headers: { Authorization: `Bearer ${REDIS_TOKEN}` } });
-        const users = (await res.json()).result || [];
-        const area = document.getElementById('usersList'); 
-        area.innerHTML = "جاري تحميل قائمة المفتشين...";
-        
-        let html = "";
-        for(let u of users) {
-            const pRes = await fetch(`${REDIS_URL}/get/user:${u}`, { headers: { Authorization: `Bearer ${REDIS_TOKEN}` } });
-            const pData = await pRes.json();
-            html += `
-                <div class="card" style="display:flex; justify-content:space-between; align-items:center;">
-                    <span>👤 المفتش: <b>${u}</b> | 🔑 كلمة السر: <b style="color:var(--sec-blue)">${pData.result}</b></span>
-                    <button class="btn btn-del" onclick="delUser('${u}')">إزالة المفتش 🗑️</button>
-                </div>`;
-        }
-        area.innerHTML = html || "لا يوجد مفتشين مضافين حالياً";
-    }
-
-    async function addUser() {
-        const u = document.getElementById('nu').value.trim(); 
-        const p = document.getElementById('np').value.trim();
-        if(!u || !p) { alert("يرجى ملء البيانات"); return; }
-        
-        await fetch(`${REDIS_URL}/set/user:${u}`, { method:'POST', headers: { Authorization: `Bearer ${REDIS_TOKEN}` }, body: p });
-        await fetch(`${REDIS_URL}/sadd/inspectors`, { method:'POST', headers: { Authorization: `Bearer ${REDIS_TOKEN}` }, body: u });
-        
-        document.getElementById('nu').value=""; 
-        document.getElementById('np').value=""; 
-        alert("تمت إضافة المفتش بنجاح");
-        loadUsers();
-    }
-
-    async function delUser(u) {
-        if(confirm(`هل تريد حقاً حظر المفتش (${u}) من النظام؟`)) {
-            await fetch(`${REDIS_URL}/del/user:${u}`, { headers: { Authorization: `Bearer ${REDIS_TOKEN}` } });
-            await fetch(`${REDIS_URL}/srem/inspectors`, { method:'POST', headers: { Authorization: `Bearer ${REDIS_TOKEN}` }, body: u });
-            loadUsers();
-        }
-    }
-
-    // التشغيل الأولي
-    fetchReports();
-</script>
-</body>
-</html>
+        if(confirm("حذف التقرير؟")) {
+            await fetch(`${
