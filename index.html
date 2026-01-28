@@ -1,9 +1,10 @@
+--- START OF FILE Trst-main/index.html ---
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>نظام السلامة الميداني - 2025</title>
+<title>نظام السلامة الميداني - 2026</title>
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
 <style>
 :root { --primary: #0a2e38; --gold: #c19a6b; --bg: #f8fafc; }
@@ -21,7 +22,8 @@ input, textarea { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid 
 input[type="radio"] { display: none; }
 input:checked + .opt-btn.ok { background: #dcfce7; color: #166534; border-color: #22c55e; }
 input:checked + .opt-btn.no { background: #fee2e2; color: #991b1b; border-color: #ef4444; }
-.violation-box { display: none; background: #fff5f5; padding: 15px; border-radius: 10px; margin-top: 10px; border: 1px dashed #ef4444; }
+input:checked + .opt-btn.na { background: #e2e8f0; color: #475569; border-color: #94a3b8; }
+.attachment-box { display: none; background: #f9fafb; padding: 15px; border-radius: 10px; margin-top: 10px; border: 1px dashed var(--gold); }
 .footer { position: fixed; bottom: 0; width: 100%; background: white; padding: 15px; text-align: center; box-shadow: 0 -5px 15px rgba(0,0,0,0.1); z-index: 999; }
 .submit-btn { background: var(--gold); color: white; border: none; padding: 15px 50px; border-radius: 12px; font-weight: bold; cursor: pointer; width: 90%; font-size: 18px; }
 </style>
@@ -72,7 +74,6 @@ input:checked + .opt-btn.no { background: #fee2e2; color: #991b1b; border-color:
 const REDIS_URL = "https://exact-parakeet-58043.upstash.io";
 const REDIS_TOKEN = "AeK7AAIncDFmOTAzMGJlOTM5Y2I0ZTFjYTg4ODRhOWIyNjJmZWMwY3AxNTgwNDM";
 
-// كل البنود اللي بعتها تتحول لأسئلة
 const qList = [
 "* تصريح العمل الأساسي والثانوي متواجد بموقع العمل",
 "* اجتماع ما قبل البدء بالعمل متواجد بموقع العمل",
@@ -126,7 +127,7 @@ const qList = [
 async function doLogin() {
     const u = uid.value;
     const p = ups.value;
-    if(u==='admin' && p==='admin2025') {
+    if(u==='admin' && p==='admin2026') {
         sessionStorage.setItem('isAdmin','true');
         location.href='admin.html';
         return;
@@ -155,19 +156,20 @@ function loadQuestions(){
         <div class="card">
             <p><b>${n}. ${q}</b></p>
             <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px;">
-                <label><input type="radio" name="q${n}" value="سليم" onclick="showV(${n},false)" required><div class="opt-btn ok">سليم</div></label>
-                <label><input type="radio" name="q${n}" value="مخالف" onclick="showV(${n},true)"><div class="opt-btn no">مخالف</div></label>
-                <label><input type="radio" name="q${n}" value="N/A" onclick="showV(${n},false)"><div class="opt-btn">N/A</div></label>
+                <label><input type="radio" name="q${n}" value="نعم" onclick="showAttach(${n})" required><div class="opt-btn ok">نعم</div></label>
+                <label><input type="radio" name="q${n}" value="لا" onclick="showAttach(${n})"><div class="opt-btn no">لا</div></label>
+                <label><input type="radio" name="q${n}" value="وولا ينطبق فعلها لانها غير مفعلة فعلها لانها غير مفعلة" onclick="showAttach(${n})"><div class="opt-btn na">وولا ينطبق فعلها لانها غير مفعلة فعلها لانها غير مفعلة</div></label>
             </div>
-            <div id="vbox${n}" class="violation-box">
+            <div id="abox${n}" class="attachment-box">
+                <p style="font-size:12px; color:var(--gold); margin-bottom:5px;">📸 إرفاق صورة وملاحظة اختياري:</p>
                 <input type="file" id="img${n}" accept="image/*" capture="environment">
-                <textarea id="note${n}" placeholder="تفاصيل المخالفة..."></textarea>
+                <textarea id="note${n}" placeholder="اكتب ملاحظاتك هنا..."></textarea>
             </div>
         </div>`;
     });
 }
 
-function showV(id, show){document.getElementById(`vbox${id}`).style.display=show?'block':'none';}
+function showAttach(id){document.getElementById(`abox${id}`).style.display='block';}
 
 const compressImage = file => new Promise(resolve=>{
     const reader = new FileReader();
@@ -191,6 +193,7 @@ const compressImage = file => new Promise(resolve=>{
 safetyForm.onsubmit=async e=>{
     e.preventDefault();
     sBtn.disabled=true;
+    sBtn.innerText = "جاري الحفظ... ⏳";
     const reportId=Date.now();
     const formData=new FormData(e.target);
     const report={
@@ -204,18 +207,24 @@ safetyForm.onsubmit=async e=>{
         supervisor_name:formData.get('supervisor_name'),
         job_order:formData.get('job_order'),
         work_desc:formData.get('work_desc'),
-        answers:{}, violations:[]
+        answers:{}, violations:[] 
     };
 
     for(let i=1;i<=qList.length;i++){
         const val=formData.get(`q${i}`);
         report.answers[i]=val;
-        if(val==='مخالف'){
-            const img=document.getElementById(`img${i}`).files[0];
+        
+        // جلب الملاحظات والصور لكل البنود
+        const note = document.getElementById(`note${i}`).value;
+        const imgFile = document.getElementById(`img${i}`).files[0];
+        
+        if(note || imgFile) {
             report.violations.push({
-                id:i, q:qList[i-1],
-                note:document.getElementById(`note${i}`).value,
-                photo:img?await compressImage(img):""
+                id: i,
+                q: qList[i-1],
+                ans: val,
+                note: note,
+                photo: imgFile ? await compressImage(imgFile) : ""
             });
         }
     }
