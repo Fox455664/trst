@@ -1,3 +1,4 @@
+ --- START OF FILE Trst-main/admin.html ---
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
@@ -15,14 +16,15 @@
         .tab-btn.active { background: var(--primary); color: white; }
         .search-box { width: 100%; padding: 15px; border-radius: 12px; border: 2px solid var(--primary); margin-bottom: 20px; outline: none; }
         .card { background: white; padding: 20px; border-radius: 15px; margin-bottom: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); border-right: 5px solid var(--primary); }
-        .status-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(85px, 1fr)); gap: 5px; margin-top: 10px; }
-        .stat-item { padding: 4px; border-radius: 4px; font-size: 9px; text-align: center; color: white; }
+        .status-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)); gap: 5px; margin-top: 10px; }
+        .stat-item { padding: 4px; border-radius: 4px; font-size: 10px; text-align: center; color: white; }
         .safe { background: #22c55e; } .danger { background: #ef4444; } .na { background: #94a3b8; }
-        .img-thumb { width: 100px; height: 100px; object-fit: cover; border-radius: 10px; cursor: pointer; border: 1px solid #ddd; margin-top: 5px; }
+        .img-thumb { width: 120px; height: 120px; object-fit: cover; border-radius: 10px; cursor: pointer; border: 1px solid #ddd; margin-top: 5px; }
         #imgModal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 10000; align-items: center; justify-content: center; }
         .btn { padding: 8px 15px; border-radius: 6px; border: none; cursor: pointer; font-weight: bold; margin-left: 5px; }
         .btn-del { background: #ef4444; color: white; }
         .btn-edit { background: #0078d4; color: white; }
+        .violation-card { margin-top:10px; border-right:3px solid var(--gold); padding:10px; background:#fafafa; border-radius:5px; }
         @media print { .no-print { display: none !important; } .card { page-break-inside: avoid; border: 1px solid #ddd; } }
     </style>
 </head>
@@ -45,7 +47,6 @@
 <div id="viewReps">
     <input type="text" id="searchInput" class="search-box no-print" placeholder="🔍 بحث سريع (مفتش، رقم تقرير، موقع، مهمة)..." oninput="runSearch()">
     
-    <!-- زر حذف جميع التقارير -->
     <div class="no-print" style="margin-bottom:15px; text-align:right">
         <button class="btn btn-del" onclick="deleteAllReports()">حذف جميع التقارير 🗑️</button>
     </div>
@@ -103,27 +104,37 @@ function runSearch() {
     const area = document.getElementById('reportsList'); area.innerHTML = "";
     filtered.reverse().forEach(r => {
         let statusHtml = "";
-        for(let i=1; i<=113; i++) {
-            let ans = r.answers[i] || "N/A";
-            let cls = ans === 'سليم' ? 'safe' : (ans === 'مخالف' ? 'danger' : 'na');
-            statusHtml += `<div class="stat-item ${cls}">بند ${i}: ${ans}</div>`;
-        }
-        let vHtml = "";
-        r.violations.forEach(v => {
-            vHtml += `<div style="margin-top:10px; border-right:3px solid red; padding-right:10px; background:#fffafa">
-                <b>بند ${v.id}: ${v.q}</b><br><span style="color:red">📝 ${v.note}</span><br>
-                ${v.photo ? `<img src="${v.photo}" class="img-thumb" onclick="openImg(this.src)">` : ""}
-            </div>`;
+        // عرض حالة الـ 47 بند (أو حسب طول مصفوفة الأجوبة)
+        Object.keys(r.answers).forEach(key => {
+            let ans = r.answers[key];
+            let cls = ans === 'نعم' ? 'safe' : (ans === 'لا' ? 'danger' : 'na');
+            statusHtml += `<div class="stat-item ${cls}">بند ${key}: ${ans}</div>`;
         });
+
+        let vHtml = "";
+        if(r.violations && r.violations.length > 0) {
+            r.violations.forEach(v => {
+                vHtml += `
+                <div class="violation-card">
+                    <b>بند ${v.id}: ${v.q}</b> <span style="background:#eee; padding:2px 5px; border-radius:4px; font-size:12px">${v.ans || ""}</span><br>
+                    <span style="color:#0a2e38">📝 الملاحظة: ${v.note || "لا توجد"}</span><br>
+                    ${v.photo ? `<img src="${v.photo}" class="img-thumb" onclick="openImg(this.src)">` : ""}
+                </div>`;
+            });
+        }
+
         area.innerHTML += `
             <div class="card">
                 <div style="display:flex; justify-content:space-between; border-bottom:1px solid #eee; padding-bottom:5px">
                     <b>📄 تقرير #${r.serial}</b><span>🕒 ${r.timestamp}</span>
                 </div>
                 <p>👷 المفتش: <b>${r.inspector}</b> | 📍 الموقع: ${r.location} | 📄 المهمة: ${r.job_order}</p>
-                <details class="no-print"><summary style="cursor:pointer; color:var(--primary)">👁️ تفاصيل الـ 113 بند</summary>
+                <details class="no-print"><summary style="cursor:pointer; color:var(--primary)">👁️ عرض ملخص البنود</summary>
                     <div class="status-grid">${statusHtml}</div></details>
-                ${vHtml}
+                <div style="margin-top:10px">
+                    <h4 style="margin-bottom:5px; border-bottom:1px solid #ddd">المرفقات والملاحظات:</h4>
+                    ${vHtml || "<p style='color:gray'>لا توجد ملاحظات أو صور مرفقة</p>"}
+                </div>
                 <div class="no-print" style="margin-top:15px">
                     <button class="btn btn-edit" onclick="window.print()">طباعة 🖨️</button>
                     <button class="btn btn-del" onclick="deleteRep('${r.serial}')">حذف 🗑️</button>
@@ -143,29 +154,18 @@ async function deleteRep(id) {
     }
 }
 
-// حذف جميع التقارير
 async function deleteAllReports(){
     if(!confirm("⚠️ هل أنت متأكد من حذف جميع التقارير؟ لا يمكن التراجع!")) return;
-
     try {
         const res = await fetch(`${REDIS_URL}/lrange/reports_list/0/-1`, { headers: { Authorization: `Bearer ${REDIS_TOKEN}` } });
         const ids = (await res.json()).result || [];
-
-        for(let id of ids){
-            await fetch(`${REDIS_URL}/del/report:${id}`, { headers: { Authorization: `Bearer ${REDIS_TOKEN}` } });
-        }
-
+        for(let id of ids){ await fetch(`${REDIS_URL}/del/report:${id}`, { headers: { Authorization: `Bearer ${REDIS_TOKEN}` } }); }
         await fetch(`${REDIS_URL}/del/reports_list`, { method:'POST', headers: { Authorization: `Bearer ${REDIS_TOKEN}` } });
-
         alert("✅ تم حذف جميع التقارير بنجاح");
         fetchReports();
-    } catch(err){
-        console.error(err);
-        alert("❌ حدث خطأ أثناء حذف التقارير");
-    }
+    } catch(err){ alert("❌ حدث خطأ أثناء حذف التقارير"); }
 }
 
-// العين السحري
 function togglePw(u, realPw) {
     const el = document.getElementById(`pw-${u}`);
     if(el.innerText === '••••••') el.innerText = realPw;
