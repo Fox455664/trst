@@ -3,9 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>نظام السلامة الميداني - الشركة السعودية للكهرباء</title>
-
+<title>نظام السلامة الميداني</title>
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
+<!-- مكتبة التوقيع -->
+<script src="https://cdn.jsdelivr.net/npm/signature_pad@4.0.0/dist/signature_pad.umd.min.js"></script>
 
 <style>
 :root{--sec-blue:#005a8f;--sec-orange:#f28b00;--bg:#f4f7f9}
@@ -15,7 +16,6 @@ body{background:var(--bg);margin:0;padding-bottom:90px}
 #loginOverlay{position:fixed;inset:0;background:linear-gradient(135deg,var(--sec-blue),#003a5d);z-index:10000;display:flex;align-items:center;justify-content:center}
 .login-card{background:#fff;padding:30px;border-radius:20px;width:90%;max-width:420px;text-align:center;box-shadow:0 20px 40px rgba(0,0,0,.3);border-top:6px solid var(--sec-orange)}
 .logo-hero{width:170px;margin-bottom:15px}
-.sub-title-archive{color:var(--sec-blue);font-size:14px;font-weight:bold;margin-top:5px;display:block;border-top:1px solid #eee;padding-top:10px}
 
 .header{background:#fff;padding:10px 15px;border-bottom:4px solid var(--sec-orange);position:sticky;top:0;z-index:1000;display:flex;justify-content:space-between;align-items:center;box-shadow:0 2px 10px rgba(0,0,0,.1)}
 .header-right{display:flex;gap:10px;align-items:center}
@@ -36,8 +36,19 @@ input:checked+.na{background:#e2e8f0;color:#475569;border:2px solid #94a3b8}
 
 .attachment-box{display:none;background:#fffcf5;padding:15px;border-radius:10px;margin-top:10px;border:1px dashed var(--sec-orange)}
 
-.footer{position:fixed;bottom:0;width:100%;background:#fff;padding:15px;text-align:center;box-shadow:0 -5px 15px rgba(0,0,0,.1)}
+.footer{position:fixed;bottom:0;width:100%;background:#fff;padding:15px;text-align:center;box-shadow:0 -5px 15px rgba(0,0,0,.1); z-index:2000}
 .submit-btn{background:var(--sec-blue);color:#fff;border:none;padding:15px;border-radius:12px;font-weight:bold;font-size:18px;width:90%}
+
+/* أنماط السيلفي والتحقق */
+.verify-box { background: #e0f2fe; border: 2px dashed #0284c7; padding: 15px; border-radius: 12px; text-align: center; margin-bottom: 20px; }
+.verify-title { color: #0284c7; font-weight: bold; margin-bottom: 10px; }
+#cameraFeed { width: 100%; max-width: 300px; border-radius: 10px; transform: scaleX(-1); display: none; margin: 10px auto; }
+#selfieCanvas { display: none; }
+#capturedSelfie { width: 150px; height: 150px; border-radius: 50%; object-fit: cover; border: 4px solid #22c55e; margin-top: 10px; display: none; margin: 10px auto; }
+.btn-geo { background: #0f766e; color: white; border: none; padding: 10px; width: 100%; border-radius: 8px; cursor: pointer; margin-top: 5px; }
+
+/* لوحة التوقيع */
+.sig-pad { border: 2px solid #ccc; border-radius: 10px; width: 100%; height: 200px; background: #fafafa; }
 </style>
 </head>
 
@@ -45,69 +56,96 @@ input:checked+.na{background:#e2e8f0;color:#475569;border:2px solid #94a3b8}
 
 <!-- LOGIN -->
 <div id="loginOverlay">
-<div class="login-card">
-<img src="imeg/imge.jpg" class="logo-hero">
-<div style="color:var(--sec-blue);font-weight:bold">
-الشركة السعودية للكهرباء<br>
-<small style="color:var(--sec-orange)">نظام تفتيش السلامة الميداني</small>
-<span class="sub-title-archive">( أرشفة زيارات الاستشاريين لبرامج العمل )</span>
-</div>
-<input id="uid" placeholder="اسم المستخدم">
-<input id="ups" type="password" placeholder="كلمة السر">
-<button onclick="doLogin()" style="width:100%;padding:15px;background:var(--sec-blue);color:#fff;border-radius:10px;border:none;font-weight:bold">دخول 🚀</button>
-<p id="lErr" style="color:red;display:none">❌ بيانات خاطئة</p>
-</div>
+    <div class="login-card">
+        <img src="imeg/imge.jpg" class="logo-hero">
+        <div style="color:var(--sec-blue);font-weight:bold; margin-bottom:15px">نظام تفتيش السلامة الميداني</div>
+        <input id="uid" placeholder="اسم المستخدم">
+        <input id="ups" type="password" placeholder="كلمة السر">
+        <button onclick="doLogin()" style="width:100%;padding:15px;background:var(--sec-blue);color:#fff;border-radius:10px;border:none;font-weight:bold; margin-top:10px">دخول 🚀</button>
+        <p id="lErr" style="color:red;display:none; margin-top:10px">❌ بيانات خاطئة</p>
+    </div>
 </div>
 
 <!-- APP -->
 <div id="mainApp" class="container">
-<div class="header">
-<div class="header-right">
-<img src="imeg/imge.jpg" height="45">
-<div>
-<span id="inspectorLabel" class="inspector-name"></span><br>
-<span onclick="logout()" style="color:red;font-size:10px;cursor:pointer">🚪 خروج</span>
-</div>
-</div>
-<div class="header-left-box">مجموعة السلامة<br>إدارة ضواحي الرياض</div>
-</div>
+    <div class="header">
+        <div class="header-right">
+            <img src="imeg/imge.jpg" height="45">
+            <div>
+                <span id="inspectorLabel" class="inspector-name"></span><br>
+                <span onclick="logout()" style="color:red;font-size:10px;cursor:pointer">🚪 خروج</span>
+            </div>
+        </div>
+        <div class="header-left-box">مجموعة السلامة<br>إدارة ضواحي الرياض</div>
+    </div>
 
-<form id="safetyForm">
+    <form id="safetyForm">
 
-<div class="card">
-<h3 style="color:var(--sec-blue)">📍 بيانات الموقع العام</h3>
+        <!-- بطاقة التحقق من الهوية (الاختراع) -->
+        <div class="card" style="border-right: 5px solid #ef4444;">
+            <h3 style="color:#b91c1c; margin-top:0">📸 إثبات التواجد (مكافحة التزوير)</h3>
+            <p style="font-size:12px; color:#666">يجب التقاط صورة سيلفي حية وتحديد الموقع لإرسال التقرير.</p>
+            
+            <div class="verify-box">
+                <div class="verify-title">1. تحديد الموقع الجغرافي</div>
+                <button type="button" class="btn-geo" onclick="getGeo()" id="geoBtn">📍 اضغط لتسجيل موقعك الحالي</button>
+                <div id="geoStatus" style="font-size:12px; margin-top:5px; color:#059669; font-weight:bold; display:none">تم تحديد الموقع بنجاح ✅</div>
+                <input type="hidden" id="geoLink" name="google_maps_link">
+            </div>
 
-<label>التاريخ:</label>
-<input type="date" id="rDate" name="report_date" required>
+            <div class="verify-box">
+                <div class="verify-title">2. صورة المفتش في الموقع</div>
+                <button type="button" onclick="startCamera()" id="camBtn" style="background:#0284c7; color:white; border:none; padding:10px; width:100%; border-radius:8px;">📷 فتح الكاميرا</button>
+                <video id="cameraFeed" autoplay playsinline></video>
+                <canvas id="selfieCanvas"></canvas>
+                <img id="capturedSelfie">
+                <button type="button" id="snapBtn" onclick="takeSnapshot()" style="display:none; background:#dc2626; color:white; width:100%; padding:10px; border-radius:8px; margin-top:10px;">📸 التقاط الصورة الآن</button>
+            </div>
+        </div>
 
-<label>اسم المقاول:</label>
-<input type="text" name="contractor_name" placeholder="اسم المقاول" required>
+        <div class="card">
+            <h3 style="color:var(--sec-blue)">📍 بيانات الموقع العام</h3>
+            
+            <label>التاريخ:</label>
+            <input type="date" id="rDate" name="report_date" required>
 
-<label>اسم المستلم:</label>
-<input type="text" name="receiver_name" placeholder="اسم المستلم" required>
+            <label>اسم الاستشاري:</label>
+            <input type="text" name="consultant_name" placeholder="اسم الاستشاري المسؤول" style="border: 2px solid var(--sec-orange);">
 
-<input name="location" placeholder="موقع العمل" required>
-<input name="district" placeholder="اسم الحي" required>
-<input name="team_name" placeholder="اسم فريق الزيارة" required>
-<input name="supervisor_name" placeholder="اسم المشرف" required>
-<input name="job_order" placeholder="رقم ( المقايسة / امر العمل / المهمه )" required>
-<input name="work_desc" placeholder="وصف العمل" required>
-</div>
+            <label>اسم المقاول:</label>
+            <input type="text" name="contractor_name" placeholder="اسم المقاول" required>
 
-<div id="questionsContainer"></div>
+            <label>اسم المستلم:</label>
+            <input type="text" name="receiver_name" placeholder="اسم المستلم" required>
 
-<div class="footer">
-<button class="submit-btn" id="sBtn">إرسال التقرير النهائي ✅</button>
-</div>
+            <input name="location" placeholder="موقع العمل" required>
+            <input name="district" placeholder="اسم الحي" required>
+            <input name="team_name" placeholder="اسم فريق الزيارة" required>
+            <input name="supervisor_name" placeholder="اسم المشرف" required>
+            <input name="job_order" placeholder="رقم ( المقايسة / امر العمل / المهمه )" required>
+            <input name="work_desc" placeholder="وصف العمل" required>
+        </div>
 
-</form>
+        <div id="questionsContainer"></div>
+
+        <div class="card">
+            <h3 style="color:var(--sec-blue)">✍️ التوقيع على الشاشة</h3>
+            <p style="font-size:12px; color:#666">توقيع المستلم أو المفتش</p>
+            <canvas id="sigCanvas" class="sig-pad"></canvas>
+            <button type="button" onclick="clearSig()" style="background:#fee2e2; color:red; border:none; padding:5px 10px; border-radius:5px; margin-top:5px; width:100%">مسح التوقيع وإعادة المحاولة</button>
+        </div>
+
+        <div class="footer">
+            <button class="submit-btn" id="sBtn">إرسال التقرير النهائي ✅</button>
+        </div>
+
+    </form>
 </div>
 
 <script>
 const REDIS_URL="https://exact-parakeet-58043.upstash.io";
 const REDIS_TOKEN="AeK7AAIncDFmOTAzMGJlOTM5Y2I0ZTFjYTg4ODRhOWIyNjJmZWMwY3AxNTgwNDM";
 
-// تم ضبط القائمة (47 بند)
 const qList=[
 "تصريح العمل الأساسي والثانوي متواجد بموقع العمل",
 "اجتماع ما قبل البدء بالعمل متواجد بموقع العمل",
@@ -158,22 +196,21 @@ const qList=[
 "ملصقات العمل على مرتفعات اوملصق أغراض متساقطة"
 ];
 
+let signaturePad;
+let verificationPhoto = null;
+
 function doLogin(){
     if(uid.value === "admin" && ups.value === "admin2025"){
-        // التعديل: استخدام localStorage لضمان عمل الصفحة التالية
         localStorage.setItem("isAdmin", "true"); 
         window.location.href = "admin.html";
         return;
     }
-
     fetch(`${REDIS_URL}/get/user:${uid.value}`,{headers:{Authorization:`Bearer ${REDIS_TOKEN}`}})
     .then(r=>r.json()).then(d=>{
         if(d.result === ups.value){
             sessionStorage.setItem("inspector", uid.value);
             startApp();
-        } else {
-            lErr.style.display = "block";
-        }
+        } else { lErr.style.display = "block"; }
     });
 }
 
@@ -183,43 +220,121 @@ function startApp(){
     inspectorLabel.innerText="المفتش: "+sessionStorage.getItem("inspector");
     rDate.valueAsDate=new Date();
     loadQuestions();
+    
+    // إعداد لوحة التوقيع
+    const canvas = document.getElementById('sigCanvas');
+    canvas.width = canvas.parentElement.clientWidth - 40; 
+    signaturePad = new SignaturePad(canvas);
 }
+
+// ----------------- منطق التحقق (الاختراع) -----------------
+// 1. الموقع الجغرافي
+function getGeo() {
+    const btn = document.getElementById('geoBtn');
+    const status = document.getElementById('geoStatus');
+    const input = document.getElementById('geoLink');
+    
+    if(!navigator.geolocation) { alert('المتصفح لا يدعم تحديد الموقع'); return; }
+    
+    btn.innerText = "جاري جلب الموقع... ⏳";
+    
+    navigator.geolocation.getCurrentPosition(
+        (pos) => {
+            const link = `https://maps.google.com/?q=${pos.coords.latitude},${pos.coords.longitude}`;
+            input.value = link;
+            status.style.display = 'block';
+            btn.style.background = '#059669';
+            btn.innerText = "✅ تم تحديد الموقع";
+        },
+        (err) => {
+            alert('تعذر تحديد الموقع. يرجى تفعيل الـ GPS والسماح للمتصفح بالوصول.');
+            btn.innerText = "📍 إعادة المحاولة";
+        },
+        { enableHighAccuracy: true }
+    );
+}
+
+// 2. الكاميرا (Face Validation)
+function startCamera() {
+    const video = document.getElementById('cameraFeed');
+    const btn = document.getElementById('camBtn');
+    const snap = document.getElementById('snapBtn');
+    
+    navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } })
+    .then(stream => {
+        video.srcObject = stream;
+        video.style.display = 'block';
+        btn.style.display = 'none';
+        snap.style.display = 'block';
+    })
+    .catch(err => alert("لا يمكن الوصول للكاميرا. تأكد من السماح بالأذونات."));
+}
+
+function takeSnapshot() {
+    const video = document.getElementById('cameraFeed');
+    const canvas = document.getElementById('selfieCanvas');
+    const img = document.getElementById('capturedSelfie');
+    const snapBtn = document.getElementById('snapBtn');
+    
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    canvas.getContext('2d').drawImage(video, 0, 0);
+    
+    verificationPhoto = canvas.toDataURL('image/jpeg', 0.8);
+    img.src = verificationPhoto;
+    img.style.display = 'block';
+    video.style.display = 'none';
+    snapBtn.style.display = 'none';
+    
+    // إيقاف الكاميرا
+    const stream = video.srcObject;
+    if(stream) stream.getTracks().forEach(track => track.stop());
+}
+
+function clearSig() { signaturePad.clear(); }
+
+// ----------------- باقي التطبيق -----------------
 
 function loadQuestions(){
     let h="";
     qList.forEach((q,i)=>{
-    let n=i+1;
-    h+=`
-    <div class="card">
-    <b>${n}. ${q}</b>
-    <div class="opt-grid">
-    <label><input type="radio" name="q${n}" value="نعم" onclick="showAttach(${n})" required><div class="opt-btn ok">نعم</div></label>
-    <label><input type="radio" name="q${n}" value="لا" onclick="showAttach(${n})"><div class="opt-btn no">لا</div></label>
-    <label><input type="radio" name="q${n}" value="لا ينطبق" onclick="showAttach(${n})"><div class="opt-btn na">لا ينطبق</div></label>
-    </div>
-    <div id="abox${n}" class="attachment-box">
-    
-    <input type="file" id="img${n}" accept="image/*" capture="environment">
-    
-    <textarea id="note${n}" placeholder="ملاحظة"></textarea>
-    </div>
-    </div>`;
+        let n=i+1;
+        h+=`<div class="card"><b>${n}. ${q}</b>
+        <div class="opt-grid">
+        <label><input type="radio" name="q${n}" value="نعم" onclick="showAttach(${n})" required><div class="opt-btn ok">نعم</div></label>
+        <label><input type="radio" name="q${n}" value="لا" onclick="showAttach(${n})"><div class="opt-btn no">لا</div></label>
+        <label><input type="radio" name="q${n}" value="لا ينطبق" onclick="showAttach(${n})"><div class="opt-btn na">لا ينطبق</div></label>
+        </div>
+        <div id="abox${n}" class="attachment-box">
+        <input type="file" id="img${n}" accept="image/*" capture="environment">
+        <textarea id="note${n}" placeholder="ملاحظة"></textarea>
+        </div></div>`;
     });
     questionsContainer.innerHTML=h;
 }
 
 function showAttach(i){document.getElementById("abox"+i).style.display="block"}
-
 function logout(){sessionStorage.clear();location.reload()}
 
 document.getElementById('sBtn').addEventListener('click', async (e) => {
     e.preventDefault(); 
     const btn = document.getElementById('sBtn');
     
+    // التحقق من الحقول الأساسية
+    if(!document.getElementById('geoLink').value) {
+        alert("⚠️ عذرًا! يجب تحديد موقعك الجغرافي أولاً (زر تحديد الموقع).");
+        return;
+    }
+    if(!verificationPhoto) {
+        alert("⚠️ عذرًا! يجب التقاط صورة سيلفي لإثبات تواجدك في الموقع.");
+        return;
+    }
+
     const formData = {
         inspector: sessionStorage.getItem("inspector"),
         timestamp: new Date().toLocaleString('ar-SA'),
         date_iso: document.getElementById('rDate').value,
+        consultant_name: document.getElementsByName('consultant_name')[0].value,
         contractor_name: document.getElementsByName('contractor_name')[0].value,
         receiver_name: document.getElementsByName('receiver_name')[0].value,
         location: document.getElementsByName('location')[0].value,
@@ -228,16 +343,19 @@ document.getElementById('sBtn').addEventListener('click', async (e) => {
         supervisor_name: document.getElementsByName('supervisor_name')[0].value,
         job_order: document.getElementsByName('job_order')[0].value,
         work_desc: document.getElementsByName('work_desc')[0].value,
+        google_maps_link: document.getElementById('geoLink').value,
+        verification_photo: verificationPhoto,
+        signature_image: signaturePad.isEmpty() ? null : signaturePad.toDataURL(),
         answers: {},
         violations: [] 
     };
 
-    if(!formData.date_iso || !formData.contractor_name || !formData.location){
-        alert("⚠️ يرجى تعبئة بيانات الموقع والمقاول والتاريخ");
+    if(!formData.contractor_name || !formData.location){
+        alert("⚠️ يرجى تعبئة بيانات الموقع والمقاول");
         return;
     }
 
-    btn.innerText = "جاري المعالجة والإرسال... ⏳";
+    btn.innerText = "جاري التحقق والإرسال... ⏳";
     btn.disabled = true;
 
     try {
@@ -245,50 +363,28 @@ document.getElementById('sBtn').addEventListener('click', async (e) => {
             const radio = document.querySelector(`input[name="q${i}"]:checked`);
             const ans = radio ? radio.value : "N/A";
             formData.answers[i] = ans;
-
             const note = document.getElementById(`note${i}`).value.trim();
             const imgInput = document.getElementById(`img${i}`);
             let photoBase64 = "";
-            let hasImage = imgInput.files && imgInput.files[0];
+            if(imgInput.files && imgInput.files[0]) photoBase64 = await toBase64(imgInput.files[0]);
 
-            if(hasImage){
-                photoBase64 = await toBase64(imgInput.files[0]);
-            }
-
-            if(ans === "لا" || note !== "" || hasImage){
-                formData.violations.push({
-                    q_id: i,
-                    q: qList[i-1],
-                    ans: ans,
-                    note: note,
-                    photo: photoBase64
-                });
+            if(ans === "لا" || note !== "" || photoBase64){
+                formData.violations.push({ q_id: i, q: qList[i-1], ans: ans, note: note, photo: photoBase64 });
             }
         }
 
-        const idRes = await fetch(`${REDIS_URL}/incr/report_id`, {
-            headers: { Authorization: `Bearer ${REDIS_TOKEN}` }
-        });
+        const idRes = await fetch(`${REDIS_URL}/incr/report_id`, { headers: { Authorization: `Bearer ${REDIS_TOKEN}` } });
         const newId = (await idRes.json()).result;
         formData.serial = newId;
 
-        await fetch(`${REDIS_URL}/set/report:${newId}`, {
-            method: 'POST',
-            headers: { Authorization: `Bearer ${REDIS_TOKEN}` },
-            body: JSON.stringify(formData)
-        });
-
-        await fetch(`${REDIS_URL}/rpush/reports_list/${newId}`, {
-            method: 'POST',
-            headers: { Authorization: `Bearer ${REDIS_TOKEN}` }
-        });
+        await fetch(`${REDIS_URL}/set/report:${newId}`, { method: 'POST', headers: { Authorization: `Bearer ${REDIS_TOKEN}` }, body: JSON.stringify(formData) });
+        await fetch(`${REDIS_URL}/rpush/reports_list/${newId}`, { method: 'POST', headers: { Authorization: `Bearer ${REDIS_TOKEN}` } });
 
         alert(`✅ تم إرسال التقرير بنجاح! رقم التقرير: ${newId}`);
         location.reload(); 
-
     } catch (err) {
         console.error(err);
-        alert("❌ حدث خطأ أثناء الإرسال، تأكد من الاتصال بالإنترنت");
+        alert("❌ حدث خطأ أثناء الإرسال");
         btn.innerText = "إرسال التقرير النهائي ✅";
         btn.disabled = false;
     }
@@ -303,6 +399,5 @@ function toBase64(file) {
     });
 }
 </script>
-
 </body>
 </html>
