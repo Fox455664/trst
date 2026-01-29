@@ -189,12 +189,16 @@ function renderReports(){
             violationsHtml += `</div>`;
         }
 
+        // إضافة اسم المقاول هنا في العرض
+        const contractorHTML = r.contractor_name ? `<div class="data-row">🏢 المقاول: <b>${r.contractor_name}</b></div>` : '';
+
         list.innerHTML += `
         <div class="card">
             <div class="report-header">
                 <div><div class="r-serial">#${r.serial}</div><div class="r-meta">${r.timestamp}</div></div>
                 <div><div style="font-weight:bold; color:var(--main-blue)">${r.inspector}</div></div>
             </div>
+            ${contractorHTML}
             <div class="data-row">📍 الموقع: <b>${r.location}</b></div>
             <div class="data-row">🏗️ العمل: <b>${r.work_desc}</b></div>
             
@@ -221,8 +225,12 @@ function toggleDetails(btn, serial){
     const p = document.getElementById(`panel-${serial}`);
     if(p.style.display==='block'){ p.style.display='none'; return; }
     const r = allReports.find(x=>x.serial==serial);
+    // إضافة المقاول في التفاصيل
     let h = `<div style="padding:10px; border:1px solid #ddd; border-radius:8px; margin-bottom:10px; font-size:12px">
-        <p>المشرف: ${r.supervisor_name}</p><p>المستلم: ${r.receiver_name}</p><p>الحي: ${r.district}</p>
+        <p><b>المقاول: ${r.contractor_name || 'غير محدد'}</b></p>
+        <p>المشرف: ${r.supervisor_name}</p>
+        <p>المستلم: ${r.receiver_name}</p>
+        <p>الحي: ${r.district}</p>
     </div>`;
     fullQuestionsList.forEach((q,i)=>{
         const ans = r.answers && r.answers[i+1] ? r.answers[i+1] : "N/A";
@@ -291,6 +299,8 @@ function downloadFullReport(serial) {
         <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px; margin-bottom:15px; font-size:12px;">
             <div>
                 <div style="display:flex; justify-content:space-between; border-bottom:1px solid #f1f1f1; padding:6px 0;"><span style="color:#005a8f; font-weight:bold;">رقم التقرير</span> <span>${r.serial}</span></div>
+                <!-- تم إضافة المقاول هنا -->
+                <div style="display:flex; justify-content:space-between; border-bottom:1px solid #f1f1f1; padding:6px 0;"><span style="color:#005a8f; font-weight:bold;">المقاول</span> <span>${r.contractor_name || '---'}</span></div>
                 <div style="display:flex; justify-content:space-between; border-bottom:1px solid #f1f1f1; padding:6px 0;"><span style="color:#005a8f; font-weight:bold;">الموقع</span> <span>${r.location}</span></div>
                 <div style="display:flex; justify-content:space-between; border-bottom:1px solid #f1f1f1; padding:6px 0;"><span style="color:#005a8f; font-weight:bold;">المستلم</span> <span>${r.receiver_name}</span></div>
             </div>
@@ -424,7 +434,7 @@ async function delRep(s){
     }
 }
 
-function logout(){ sessionStorage.clear(); location.href='index.html'; }
+function logout(){ sessionStorage.clear(); location.href='index.htmll'; }
 
 fetchReports();
 </script>
