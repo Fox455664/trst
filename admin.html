@@ -134,7 +134,7 @@ const fullQuestionsList = [
 ];
 
 let allReports = [];
-if(sessionStorage.getItem('isAdmin')!=='true') location.href='index.htmll';
+if(sessionStorage.getItem('isAdmin')!=='true') location.href='index.html';
 
 function switchTab(t,b){
     document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
@@ -434,7 +434,7 @@ async function delRep(s){
     }
 }
 
-function logout(){ sessionStorage.clear(); location.href='index.htmll'; }
+function logout(){ sessionStorage.clear(); location.href='index.html'; }
 
 fetchReports();
 </script>
