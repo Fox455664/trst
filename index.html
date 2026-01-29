@@ -107,6 +107,7 @@ input:checked+.na{background:#e2e8f0;color:#475569;border:2px solid #94a3b8}
 const REDIS_URL="https://exact-parakeet-58043.upstash.io";
 const REDIS_TOKEN="AeK7AAIncDFmOTAzMGJlOTM5Y2I0ZTFjYTg4ODRhOWIyNjJmZWMwY3AxNTgwNDM";
 
+// تم ضبط القائمة (47 بند)
 const qList=[
 "تصريح العمل الأساسي والثانوي متواجد بموقع العمل",
 "اجتماع ما قبل البدء بالعمل متواجد بموقع العمل",
@@ -154,19 +155,14 @@ const qList=[
 "خطة الإنقاذ في العمل على المرتفعات",
 "خطة رفع الأحمال الحرجة",
 "إجراء وملصقات حماية السمع",
-"ملصقات العمل على مرتفعات اوملصق أغراض متساقطة",
-"التأكد من خطاف الونش واحبال الرفع",
-"الحمل الأقصى محدد بوضوح على جميع معدات الرفع",
-"مهام الوقاية الشخصية سليمة (بسؤال الموظف والتفتيش علية) خوذة - ملابس – حذاء",
-"التفتيش على القفاز المطاطي (33000 – 13000 – 1000) ك.ف.أ",
-"الخوذة الكهربائية مزودة بحامى وجة",
-"أحزمة السلامة مرقمة وسليمة"
+"ملصقات العمل على مرتفعات اوملصق أغراض متساقطة"
 ];
 
 function doLogin(){
     if(uid.value === "admin" && ups.value === "admin2025"){
-        sessionStorage.setItem("isAdmin", "true"); 
-        location.href = "admin.html";
+        // التعديل: استخدام localStorage لضمان عمل الصفحة التالية
+        localStorage.setItem("isAdmin", "true"); 
+        window.location.href = "admin.html";
         return;
     }
 
@@ -203,7 +199,6 @@ function loadQuestions(){
     </div>
     <div id="abox${n}" class="attachment-box">
     
-    <!-- هنا تم التعديل لإضافة capture="environment" لفتح الكاميرا الخلفية مباشرة -->
     <input type="file" id="img${n}" accept="image/*" capture="environment">
     
     <textarea id="note${n}" placeholder="ملاحظة"></textarea>
